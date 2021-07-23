@@ -2,6 +2,9 @@
 
 package lesson1.task1
 
+import java.lang.NumberFormatException
+import kotlin.Double.Companion.NEGATIVE_INFINITY
+import kotlin.Double.Companion.POSITIVE_INFINITY
 import kotlin.math.*
 
 /**
@@ -78,7 +81,7 @@ fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double =
  * Вывести значение того же угла в радианах (например, 0.63256).
  */
 fun angleInRadian(deg: Int, min: Int, sec: Int): Double =
-    PI / (180 / ((((sec / 60) + min) / 60) + deg))
+    PI / (180 / ((((sec / 60.0) + min) / 60.0) + deg))
 
 /**
  * Тривиальная
@@ -86,8 +89,20 @@ fun angleInRadian(deg: Int, min: Int, sec: Int): Double =
  * Найти длину отрезка, соединяющего точки на плоскости с координатами (x1, y1) и (x2, y2).
  * Например, расстояние между (3, 0) и (0, 4) равно 5
  */
-fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double =
-    sqrt((sqr(x1) - 2 * x1 * x2 + sqr(x2)) + (sqr(y1) - 2 * y1 * y2 + sqr(y2)))
+fun trackLength(x1: Double, y1: Double, x2: Double, y2: Double): Double {
+    if (sqr(x1) == POSITIVE_INFINITY || sqr(x2) == POSITIVE_INFINITY ||
+        sqr(y1) == POSITIVE_INFINITY || sqr(y2) == POSITIVE_INFINITY
+    ) throw return POSITIVE_INFINITY
+
+    if (sqr(x1) == NEGATIVE_INFINITY || sqr(x2) == NEGATIVE_INFINITY ||
+        sqr(y1) == NEGATIVE_INFINITY || sqr(y2) == NEGATIVE_INFINITY
+    ) throw return NEGATIVE_INFINITY
+
+    val x = (sqr(x1) - 2 * x1 * x2 + sqr(x2))
+    val y = (sqr(y1) - 2 * y1 * y2 + sqr(y2))
+    return sqrt(x + y)
+}
+
 
 /**
  * Простая
