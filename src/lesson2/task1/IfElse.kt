@@ -176,7 +176,7 @@ fun rookOrBishopThreatens(
 ): Int {
     var threatPosition1y = abs((kingX - bishopX) + bishopY) // Для короля по Y справа от слона
     var threatPosition2y = abs((kingX - bishopX) - bishopY) // Для короля по Y слева от слона
-    //println("threatposition1: $threatPosition1y; threatposition2: $threatPosition2y")
+
     return when {
         (kingX == rookX || kingY == rookY) && (threatPosition1y != kingY && threatPosition2y != kingY) -> 1
         (threatPosition1y == kingY || threatPosition2y == kingY) && (kingX != rookX && kingY != rookY) -> 2

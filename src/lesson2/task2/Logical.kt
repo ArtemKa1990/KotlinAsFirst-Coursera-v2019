@@ -18,7 +18,27 @@ fun pointInsideCircle(x: Double, y: Double, x0: Double, y0: Double, r: Double) =
  * Четырехзначное число назовем счастливым, если сумма первых двух ее цифр равна сумме двух последних.
  * Определить, счастливое ли заданное число, вернуть true, если это так.
  */
-fun isNumberHappy(number: Int): Boolean = TODO()
+fun isNumberHappy(number: Int): Boolean {
+    var positionNumber: Int
+    var rightHalf = 0
+    var leftHalf = 0
+    var initialNumber = number
+    val numLength = number.toString().length
+    val halfLength = numLength / 2
+
+    return if (numLength % 2 == 0) {
+        while (initialNumber != 0) {
+            positionNumber = initialNumber % 10
+
+            if (halfLength < initialNumber.toString().length) {
+                rightHalf += positionNumber
+            } else leftHalf += positionNumber
+            initialNumber = (initialNumber - positionNumber) / 10
+
+        }
+        rightHalf - leftHalf == 0
+    } else false
+}
 
 /**
  * Простая
@@ -27,7 +47,17 @@ fun isNumberHappy(number: Int): Boolean = TODO()
  * Определить, угрожают ли они друг другу. Вернуть true, если угрожают.
  * Считать, что ферзи не могут загораживать друг друга.
  */
-fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean = TODO()
+fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
+    var threatPosition1y = Math.abs((x1 - x2) + y2) // Для короля по Y справа от ферзя
+    var threatPosition2y = Math.abs((x1 - x2) - y2) // Для короля по Y слева от ферзя
+
+    return when {
+        (threatPosition1y == y1 || threatPosition2y == y1) || (x1 == x2 || y1 == y2) -> true
+        //(threatPosition1y == kingY || threatPosition2y == kingY) && (kingX != rookX && kingY != rookY) -> 2
+        //(threatPosition1y == kingY || threatPosition2y == kingY) && (kingX == rookX || kingY == rookY) -> 3
+        else -> false
+    }
+}
 
 
 /**
@@ -36,7 +66,16 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean = TODO()
  * Дан номер месяца (от 1 до 12 включительно) и год (положительный).
  * Вернуть число дней в этом месяце этого года по григорианскому календарю.
  */
-fun daysInMonth(month: Int, year: Int): Int = TODO()
+fun daysInMonth(month: Int, year: Int): Int {
+    return when {
+        month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12 -> 31
+        month == 2 && ((year % 100 == 0 && year % 400 != 0) || year % 4 != 0) -> 28
+        month == 2 && year % 400 != 0 && year % 4 == 0 -> 29
+        month == 2 && year % 400 == 0 -> 29
+        month == 4 || month == 6 || month == 9 || month == 11 -> 30
+        else -> 0
+    }
+}
 
 /**
  * Средняя
@@ -48,7 +87,15 @@ fun daysInMonth(month: Int, year: Int): Int = TODO()
 fun circleInside(
     x1: Double, y1: Double, r1: Double,
     x2: Double, y2: Double, r2: Double
-): Boolean = TODO()
+): Boolean {
+    println("x1: $x1; y1: $y1; r1: $r1; ---- x2: $x2; y2: $y2; r2: $r2")
+    return if ((sqr(x1) - 2 * x1 * x2 + sqr(x2)) + (sqr(y1) - 2 * y1 * y2 + sqr(y2)) <= (sqr(r1) - 2 * r1 * r2 + sqr(r2))){
+        when {
+            r2 - r1 < 0 -> false
+            else -> true
+        }
+    } else false
+}
 
 /**
  * Средняя
@@ -59,4 +106,15 @@ fun circleInside(
  * кирпич 4 х 4 х 4 пройдёт через отверстие 4 х 4.
  * Вернуть true, если кирпич пройдёт
  */
-fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean = TODO()
+fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
+    println("a: $a; b: $b; c: $c; r: $r; s: $s")
+    return when {
+        a <= r && (b <= s || c <= s) -> true
+        a <= s && (b <= r || c <= r) -> true
+        b <= r && (a <= s || c <= s) -> true
+        b <= s && (a <= r || c <= r) -> true
+        c <= r && (a <= s || b <= s) -> true
+        c <= s && (a <= r || b <= r) -> true
+        else -> return false
+    }
+}
