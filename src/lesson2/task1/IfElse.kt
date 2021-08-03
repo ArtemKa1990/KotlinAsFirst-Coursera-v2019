@@ -101,7 +101,7 @@ fun timeForHalfWay(
     var resultTime = 0.0
 
     leftDistance += halfWay - (t1 * v1)
-
+    println("HalfWay: $halfWay; leftDistance: $leftDistance")
     when {
         leftDistance > 0.0 -> {
             resultTime += t1
@@ -111,29 +111,23 @@ fun timeForHalfWay(
         }
         else -> return resultTime + (((t1 * v1) + leftDistance) / v1)
     }
-
+    println("resultTime1: $resultTime")
     leftDistance -= (t2 * v2)
     when {
-        leftDistance > 0.0 -> {
+        leftDistance >= 0.0 -> {
             resultTime += t2
-        }
-        leftDistance == 0.0 -> {
-            return t2
         }
         else -> return resultTime + (((t2 * v2) + leftDistance) / v2)
     }
-
+    println("resultTime2: $resultTime")
     leftDistance -= (t3 * v3)
     when {
-        leftDistance > 0.0 -> {
+        leftDistance >= 0.0 -> {
             resultTime += t3
-        }
-        leftDistance == 0.0 -> {
-            return t3
         }
         else -> return resultTime + (((t3 * v3) + leftDistance) / v3)
     }
-
+    println("resultTime3: $resultTime")
     return resultTime
 }
 
