@@ -3,6 +3,7 @@
 package lesson2.task2
 
 import lesson1.task1.sqr
+import java.lang.Math.abs
 
 /**
  * Пример
@@ -48,11 +49,11 @@ fun isNumberHappy(number: Int): Boolean {
  * Считать, что ферзи не могут загораживать друг друга.
  */
 fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
-    var threatPosition1y = Math.abs((x1 - x2) + y2) // Для короля по Y справа от ферзя
-    var threatPosition2y = Math.abs((x1 - x2) - y2) // Для короля по Y слева от ферзя
+    var deltaQueenX = abs(x1 - x2) //Дельта расстояния по Х
+    var deltaQueenY = abs(y1 - y2) //Дельта расстояния по Y
 
     return when {
-        (threatPosition1y == y1 || threatPosition2y == y1) || (x1 == x2 || y1 == y2) -> true
+        (x1 == x2 || y1 == y2) || (deltaQueenX == deltaQueenY) -> true
         //(threatPosition1y == kingY || threatPosition2y == kingY) && (kingX != rookX && kingY != rookY) -> 2
         //(threatPosition1y == kingY || threatPosition2y == kingY) && (kingX == rookX || kingY == rookY) -> 3
         else -> false

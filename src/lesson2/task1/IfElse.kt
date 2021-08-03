@@ -76,7 +76,7 @@ fun ageDescription(age: Int): String {
             "$age год"
         } else "$age года"
     } else
-        if (lastNumInHundreds in 5..20 || (lastNumInHundreds > 20 && (lastNumInDecades in 5..9 || lastNumInDecades == 0))) { //if (age > 20) {
+        if (lastNumInHundreds in 5..20 || (lastNumInHundreds > 20 && (lastNumInDecades in 5..9 || lastNumInDecades == 0)) || lastNumInHundreds == 0) { //if (age > 20) {
             "$age лет"
         } else if (lastNumInDecades == 1) {
             "$age год"
@@ -174,13 +174,13 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    var threatPosition1y = abs((kingX - bishopX) + bishopY) // Для короля по Y справа от слона
-    var threatPosition2y = abs((kingX - bishopX) - bishopY) // Для короля по Y слева от слона
+    val deltaKingBishopX = abs(kingX - bishopX)
+    val deltaKingBishopY = abs(kingY - bishopY)
 
     return when {
-        (kingX == rookX || kingY == rookY) && (threatPosition1y != kingY && threatPosition2y != kingY) -> 1
-        (threatPosition1y == kingY || threatPosition2y == kingY) && (kingX != rookX && kingY != rookY) -> 2
-        (threatPosition1y == kingY || threatPosition2y == kingY) && (kingX == rookX || kingY == rookY) -> 3
+        (kingX == rookX || kingY == rookY) && (deltaKingBishopX != deltaKingBishopY) -> 1
+        (deltaKingBishopX == deltaKingBishopY) && (kingX != rookX && kingY != rookY) -> 2
+        (deltaKingBishopX == deltaKingBishopY) && (kingX == rookX || kingY == rookY) -> 3
         else -> 0
     }
 }
@@ -228,7 +228,7 @@ else -1
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    if (b < a || c < d) {
+    if (b < a || c > d) {
         return -1
     }
     return when {
