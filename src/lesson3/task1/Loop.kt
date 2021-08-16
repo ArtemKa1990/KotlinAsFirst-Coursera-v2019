@@ -3,6 +3,7 @@
 package lesson3.task1
 
 import lesson1.task1.sqr
+import java.lang.Math.PI
 import java.lang.Math.abs
 import kotlin.math.PI
 import kotlin.math.pow
@@ -226,23 +227,20 @@ fun collatzSteps(x: Int): Int {
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
 fun sin(x: Double, eps: Double): Double {
-    var seriesMember = x
+    var x2piVal = x % (2 * kotlin.math.PI)
+    var seriesMember = x2piVal
     var result = 0.0
     var n = 1
-    if (abs(x) > 30) {
-        if (x % PI < eps) {
-            return 0.0
-        }
-    }
+
     while (abs(seriesMember) > eps) {
-        n += 1
         result += seriesMember
-        //println("Result: $result with seriesMember: $seriesMember and n: $n")
-        seriesMember *= -x * x / ((2.0 * n - 1.0) * (2.0 * n - 2.0))
-        //println("Next seriesMember: $seriesMember with n = $n")
+        println("Result: $result with seriesMember: $seriesMember and n: $n")
+        seriesMember *= -1.0 * x2piVal * x2piVal / ((2.0 * n) * (2.0 * n + 1))
+        println("Next seriesMember: $seriesMember with n = $n")
+        n += 1
     }
     return when {
-        abs(result) < 1e-5 -> 0.0
+        abs(result) < eps -> 0.0
         else -> result
     }
 }
