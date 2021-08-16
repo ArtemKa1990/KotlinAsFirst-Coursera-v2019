@@ -229,14 +229,19 @@ fun sin(x: Double, eps: Double): Double {
     var seriesMember = x
     var result = 0.0
     var n = 1
-    if (x % PI < eps) {
-        return 0.0
+    if (x / PI > 9) {
+        if (x % PI < eps) {
+            return 0.0
+        }
     }
     while (abs(seriesMember) > eps) {
         n += 1
         result += seriesMember
+        println("Result: $result with seriesMember: $seriesMember")
         seriesMember *= -x * x / ((2.0 * n - 1.0) * (2.0 * n - 2.0))
+        println("Next seriesMember: $seriesMember")
     }
+
     return result
 }
 
