@@ -242,7 +242,7 @@ fun sin(x: Double, eps: Double): Double {
         //println("Next seriesMember: $seriesMember with n = $n")
     }
     return when {
-        abs(result) < eps -> 0.0
+        abs(result) < 1e-5 -> 0.0
         else -> result
     }
 }
