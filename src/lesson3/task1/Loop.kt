@@ -229,6 +229,9 @@ fun sin(x: Double, eps: Double): Double {
     var seriesMember = x
     var result = 0.0
     var n = 1
+    if (x % PI < eps) {
+        return 0.0
+    }
     while (abs(seriesMember) > eps) {
         n += 1
         result += seriesMember
