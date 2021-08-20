@@ -3,6 +3,7 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
@@ -245,4 +246,172 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+fun getWordFromHundreds(numVal: Int, numLength: Int): String {
+    val digits = mapOf(
+        0 to "ноль",
+        1 to "один",
+        2 to "два",
+        3 to "три",
+        4 to "четыре",
+        5 to "пять",
+        6 to "шесть",
+        7 to "семь",
+        8 to "восемь",
+        9 to "девять"
+    )
+    val decades = mapOf(
+        1 to "десять",
+        11 to "одиннадцать",
+        12 to "двенадцать",
+        13 to "тринадцать",
+        14 to "четырнадцать",
+        15 to "пятнадцать",
+        16 to "шестнадцать",
+        17 to "семнадцать",
+        18 to "восемнадцать",
+        19 to "девятнадцать",
+        2 to "двадцать",
+        3 to "тридцать",
+        4 to "сорок",
+        5 to "пятьдесят",
+        6 to "шестьдесят",
+        7 to "семьдесят",
+        8 to "восемьдесят",
+        9 to "девяносто"
+    )
+    val hundreds = mapOf(
+        1 to "сто",
+        2 to "двести",
+        3 to "триста",
+        4 to "четыреста",
+        5 to "пятьсот",
+        6 to "шестьсот",
+        7 to "семьсот",
+        8 to "восемьсот",
+        9 to "девятьсот"
+    )
+    val thousands = mapOf(
+        1 to "одна тысяча",
+        2 to "две тысячи",
+        3 to "три тысячи",
+        4 to "четыре тысячи",
+        5 to "пять тысяч",
+        6 to "шесть тысяч",
+        7 to "семь тысяч",
+        8 to "восемь тысяч",
+        9 to "девять тысяч"
+    )
+
+    var resultText = ""
+    var numLengthVar = kotlin.math.log10(numVal * 1.0).toInt() + 1
+    var currentDigit = kotlin.math.floor(numVal / 10.0.pow(numLengthVar - 1)).toInt()
+    var leftovers = (numVal - (currentDigit * 10.0.pow(numLengthVar - 1).toInt()))
+
+    //TODO Надо сделать ветку для случая с нулём
+    println("Мы в get_word_from_hundreds")
+    if (numVal == 0) {
+        return digits.getValue(numVal)
+    }
+
+    if (decades.containsKey(numVal)) {
+        resultText = when {
+            resultText.isEmpty() -> decades.getValue(numVal)
+            else -> resultText + " " + decades.getValue(numVal)
+        }
+    }
+    // Данное условие нужно для значений < 10, поскольку для них разные слова "тысяча" и "тысячи"
+    if (numLength > 3) {
+        if (thousands.containsKey(numVal)) {
+            return thousands.getValue(numVal)
+        }
+    } else {
+        if (digits.containsKey(numVal)) {
+            return digits.getValue(numVal)
+        }
+    }
+
+    if (resultText.isEmpty()) {
+        do {
+            if (numLengthVar == 3 && hundreds.containsKey(currentDigit)) {
+                resultText = when {
+                    resultText.isEmpty() -> hundreds.getValue(currentDigit)
+                    else -> resultText + " " + hundreds.getValue(currentDigit)
+                }
+            } else if (numLengthVar == 2 && decades.containsKey(currentDigit)) {
+                resultText = when {
+                    resultText.isEmpty() -> decades.getValue(currentDigit)
+                    else -> resultText + " " + decades.getValue(currentDigit)
+                }
+            } else if (numLengthVar == 1 && digits.containsKey(currentDigit)) {
+                resultText = when {
+                    resultText.isEmpty() -> digits.getValue(currentDigit)
+                    else -> resultText + " " + digits.getValue(currentDigit)
+                }
+            }
+
+            numLengthVar = kotlin.math.log10(leftovers * 1.0).toInt() + 1
+
+            currentDigit = kotlin.math.floor(leftovers / 10.0.pow(numLengthVar - 1)).toInt()
+            leftovers = (leftovers - (currentDigit * 10.0.pow(numLengthVar - 1).toInt()))
+
+        } while (currentDigit != 0)
+    }
+
+    when {
+        numLength > 3 -> resultText += " тысяч"
+        else -> resultText
+    }
+    return resultText
+}
+
+fun russian(n: Int): String {
+    var result: String = ""
+    var thousandsNum = 0
+    var hundredsNum = 0
+    var decadesNum = 0
+
+    var numLength = kotlin.math.log10(n * 1.0).toInt() + 1
+    println("Длинна числа: $numLength")
+
+    if (numLength <= 1) {
+        result = getWordFromHundreds(n, 1)
+    }
+
+    if (numLength > 3) {
+        thousandsNum = kotlin.math.floor(n / 1000.0).toInt()
+        hundredsNum = when {
+            n % 1000 >= 100 -> n % 1000
+            else -> 0
+        }
+        decadesNum = when {
+            hundredsNum % 100 >= 10 -> hundredsNum % 100
+            else -> 0
+        }
+    } else if (numLength == 3) {
+        hundredsNum = n
+        decadesNum = when {
+            hundredsNum % 100 >= 10 -> hundredsNum % 100
+            else -> 0
+        }
+    } else if (numLength < 3) {
+        decadesNum = n
+    }
+
+    if (thousandsNum > 0) {
+        result = getWordFromHundreds(thousandsNum, numLength)
+    }
+    if (hundredsNum > 0) {
+        result = when {
+            result.isEmpty() -> getWordFromHundreds(hundredsNum, 3)
+            else -> result + " " + getWordFromHundreds(hundredsNum, 3)
+        }
+    }
+    if (decadesNum > 0) {
+        result = when {
+            result.isEmpty() -> getWordFromHundreds(hundredsNum, 2)
+            else -> result + " " + getWordFromHundreds(decadesNum, 2)
+        }
+    }
+
+    return result
+}

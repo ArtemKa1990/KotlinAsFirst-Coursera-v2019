@@ -227,6 +227,8 @@ fun collatzSteps(x: Int): Int {
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
 fun sin(x: Double, eps: Double): Double {
+    // Это позволяет найти соответствующий угол в пределах -2π <= x <= 2π,
+    // иначе при значениях больше n > 35 уже начинаются "чудеса"
     var x2piVal = x % (2 * kotlin.math.PI)
     var seriesMember = x2piVal
     var result = 0.0
