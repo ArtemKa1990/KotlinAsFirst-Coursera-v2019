@@ -313,25 +313,13 @@ fun getWordFromHundreds(numVal: Int, numLength: Int): String {
         return digits.getValue(numVal)
     }
 
-    // Данное условие нужно для значений < 10, поскольку для них разные слова "тысяча" и "тысячи"
-    if (numVal < 10 && numLength > 3) {
-        // Присланное число есть в массиве тысяч
-        if (thousands.containsKey(numVal)) {
-            return thousands.getValue(numVal)
-        }
-    } else if (numVal < 10) {
-        // Присланное число есть в массиве единиц и оно от 1 до 9
-        if (digits.containsKey(numVal)) {
-            return digits.getValue(numVal)
-        }
-    }
-
     //println("currentDigit: $currentDigit; leftovers: $leftovers")
-    if (numLengthVar == 3 && hundreds.containsKey(currentDigit) && leftovers > 10 && decades.containsKey(leftovers)) {
+    // Число состоит из сотен и числа от 10 до 19
+    if (numLengthVar == 3 && hundreds.containsKey(currentDigit) && leftovers > 9 && decades.containsKey(leftovers)) {
         resultText = hundreds.getValue(currentDigit) + " " + decades.getValue(leftovers)
     }
     //println("result text: $resultText")
-    // Присланное число есть в массиве десятков и оно от 11 до 19
+    // Присланное число есть в массиве десятков и оно от 10 до 19
     if (numLengthVar == 2 && decades.containsKey(numVal)) {
         resultText = when {
             resultText.isEmpty() -> decades.getValue(numVal)
