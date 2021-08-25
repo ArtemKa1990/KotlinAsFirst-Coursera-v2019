@@ -288,7 +288,7 @@ class Tests {
     @Test
     @Tag("Hard")
     fun propagateHandshakes() {
-        /*assertEquals(
+        assertEquals(
             mapOf(
                 "Marat" to setOf("Mikhail", "Sveta"),
                 "Sveta" to setOf("Mikhail"),
@@ -339,7 +339,7 @@ class Tests {
                     "3" to setOf("0")
                 )
             )
-        )*/
+        )
         assertEquals(
             mapOf(
                 "0" to setOf<String>(),

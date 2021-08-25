@@ -276,7 +276,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     var resultMap = mutableMapOf<String, Set<String>>()
     for ((person, handshakes) in friends) {
         val handshake = handshakes.plus(handshakes.intersect(friends.keys))
-        
+
         if (handshake.isNotEmpty()) {
             for (resHandshake in handshake) {
                 if (!friends.containsKey(resHandshake)) {
