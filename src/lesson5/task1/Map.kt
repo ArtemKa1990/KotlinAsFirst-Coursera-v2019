@@ -147,7 +147,24 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
  *     mapOf("Emergency" to "911", "Police" to "02")
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
-fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> = TODO()
+fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
+    var resultMap = mutableMapOf<String, String>()
+    for ((name, number) in mapA) {
+        if (!resultMap.containsKey(name)) {
+            if (mapB.containsKey(name) && mapB.getValue(name) != number) {
+                resultMap[name] = number + ", " + mapB.getValue(name)
+            } else resultMap[name] = number
+        }
+    }
+    for ((name, number) in mapB) {
+        if (!resultMap.containsKey(name)) {
+            if (!mapA.containsKey(name)) {
+                resultMap[name] = number
+            }
+        }
+    }
+    return resultMap
+}
 
 /**
  * Средняя
@@ -159,7 +176,23 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> = TODO()
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
+    var resultMap = mutableMapOf<String, Double>()
+    var matchingValues = 0
+    for ((stock, price) in stockPrices) {
+        if (!resultMap.containsKey(stock)) {
+            matchingValues = stockPrices.count { it.first == stock }
+            resultMap[stock] = when {
+                matchingValues > 1 -> (price ?: 0.0) / 2
+                else -> (price ?: 0.0)
+            }
+        } else {
+            resultMap[stock] = resultMap[stock]!! + ((price ?: 0.0) / 2)
+        }
+    }
+
+    return resultMap
+}
 
 /**
  * Средняя
@@ -238,7 +271,23 @@ fun hasAnagrams(words: List<String>): Boolean = TODO()
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    var resultMap = mutableMapOf<String, Set<String>>()
+    for ((person, handshakes) in friends) {
+        val handshake = handshakes.plus(handshakes.intersect(friends.keys))
+        if (handshake != null) {
+            for (resHandshake in handshake) {
+                if (!friends.containsKey(resHandshake)) {
+                    resultMap[resHandshake] = setOf()
+                }
+                resultMap[person] = (friends[resHandshake] ?: setOf<String>()).plus(handshakes).minus(person)
+            }
+        } else {
+            resultMap[person] = handshakes
+        }
+    }
+    return resultMap
+}
 
 /**
  * Сложная
@@ -280,4 +329,6 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    TODO()
+}

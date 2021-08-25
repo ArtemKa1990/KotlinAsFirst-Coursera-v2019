@@ -71,6 +71,17 @@ fun invertPositives(list: MutableList<Int>) {
 }
 
 /**
+ * Пример из видео, перемножение всех значений в списке используя оператор fold
+ *
+ * Функция свертки берет значение аккумулятора, умножает его на текущий элемент и возвращает получившийся
+ * результат в качестве следующего нового значения аккумулятора. После того как мы обработали весь список,
+ * итоговое значение аккумулятора возвращается как результат всей функции fold.
+ */
+fun multiplyAll(list: List<Int>) = list.fold(1.0) { previousResult, element ->
+    previousResult * element
+}
+
+/**
  * Пример
  *
  * Из имеющегося списка целых чисел, сформировать список их квадратов
@@ -133,7 +144,17 @@ fun mean(list: List<Double>): Double = TODO()
  *
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
-fun center(list: MutableList<Double>): MutableList<Double> = TODO()
+fun center(list: MutableList<Double>): MutableList<Double> {
+    var averageArif: Double
+    if (list.isNotEmpty()) {
+        averageArif = list.sum() / list.size
+        //println("averageArif: $averageArif")
+        for (i in 0 until list.size) {
+            list[i] = list[i] - averageArif
+        }
+    }
+    return list
+}
 
 /**
  * Средняя
@@ -142,7 +163,16 @@ fun center(list: MutableList<Double>): MutableList<Double> = TODO()
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.
  */
-fun times(a: List<Int>, b: List<Int>): Int = TODO()
+fun times(a: List<Int>, b: List<Int>): Int {
+    var result = 0
+    if (a.isEmpty() && b.isEmpty()) {
+        return 0
+    }
+    for (i in a.indices) {
+        result += a[i] * b[i]
+    }
+    return result
+}
 
 /**
  * Средняя
@@ -152,7 +182,9 @@ fun times(a: List<Int>, b: List<Int>): Int = TODO()
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0 при любом x.
  */
-fun polynom(p: List<Int>, x: Int): Int = TODO()
+fun polynom(p: List<Int>, x: Int): Int =
+    p.fold(0) { polynomial, e -> (polynomial + e * (x * 1.0).pow(p.indexOf(e))).toInt() }
+
 
 /**
  * Средняя
