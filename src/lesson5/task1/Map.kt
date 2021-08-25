@@ -180,8 +180,9 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
     var resultMap = mutableMapOf<String, Double>()
     var matchingValues = 0
     for ((stock, price) in stockPrices) {
+        matchingValues = stockPrices.count { it.first == stock }
         if (!resultMap.containsKey(stock)) {
-            matchingValues = stockPrices.count { it.first == stock }
+
             resultMap[stock] = when {
                 matchingValues > 1 -> (price ?: 0.0) / matchingValues
                 else -> (price ?: 0.0)
@@ -275,17 +276,21 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     var resultMap = mutableMapOf<String, Set<String>>()
     for ((person, handshakes) in friends) {
         val handshake = handshakes.plus(handshakes.intersect(friends.keys))
-        println("handshake: $handshake")
+
         if (handshake.isNotEmpty()) {
             for (resHandshake in handshake) {
                 if (!friends.containsKey(resHandshake)) {
                     resultMap[resHandshake] = setOf()
                 }
+
                 resultMap[person] = (friends[resHandshake] ?: setOf<String>()).plus(handshakes).minus(person)
             }
         } else {
             resultMap[person] = handshakes
         }
+    }
+    if (resultMap != friends) {
+        resultMap = propagateHandshakes(resultMap) as MutableMap<String, Set<String>>
     }
     return resultMap
 }

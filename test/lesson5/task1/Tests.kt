@@ -214,6 +214,24 @@ class Tests {
             averageStockPrice(listOf("" to 0.0, "" to 0.0, "" to 1.0))
 
         )
+        assertEquals(
+            mapOf("" to 0.125, "a" to 0.0),
+            averageStockPrice(
+                listOf(
+                    "" to 0.0,
+                    "" to 0.0,
+                    "" to 0.0,
+                    "" to 0.0,
+                    "a" to 0.0,
+                    "" to 0.0,
+                    "" to 0.0,
+                    "" to 0.0,
+                    "" to 1.0,
+                    "a" to 0.0
+                )
+            )
+
+        )
     }
 
     @Test
@@ -302,6 +320,23 @@ class Tests {
             propagateHandshakes(
                 mapOf(
                     "0" to setOf()
+                )
+            )
+        )
+        assertEquals(
+            mapOf(
+                "1" to setOf<String>(),
+                "0" to setOf("1"),
+                "4" to setOf(),
+                "2" to setOf("4", "3", "0", "1"),
+                "3" to setOf("1", "0")
+            ),
+            propagateHandshakes(
+                mapOf(
+                    "1" to setOf(),
+                    "0" to setOf("1"),
+                    "2" to setOf("4", "3"),
+                    "3" to setOf("0")
                 )
             )
         )
