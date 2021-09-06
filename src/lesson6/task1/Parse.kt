@@ -75,7 +75,7 @@ fun dateStrToDigit(str: String): String {
     var month: String = ""
     var monthMaxDay = 0
     var year: Int = 0
-    val pattern = """\d{1,2}\s[А-Яа-я]+\s\d{4}""".toRegex()
+    val pattern = """\d{1,2}\s[А-Яа-я]+\s\d+""".toRegex()
 
     val monthVal = mapOf<String, Pair<String, Int>>(
         "января" to Pair("01", 31),
@@ -103,7 +103,7 @@ fun dateStrToDigit(str: String): String {
                 }
                 2 -> year = str.split(" ")[wordNum].toInt()
             }
-            //println("Day $day; month $month; year $year; str: ${str.split(" ")[wordNum]}")
+            println("Day $day; month $month; year $year; str: ${str.split(" ")[wordNum]}")
             if (day > 31 || day < 1 || (wordNum == 1 && month == "")) {
                 return ""
             }
@@ -118,7 +118,7 @@ fun dateStrToDigit(str: String): String {
     if (day == 0 || month == "" || year == 0) {
         return ""
     }
-    return String.format("%02d.%s.%4d", day, month, year)
+    return String.format("%02d.%s.%d", day, month, year)
 }
 
 /**
@@ -229,9 +229,6 @@ fun bestHighJump(jumps: String): Int {
     var attemptType = ""
     var typeAttemptPattern = Regex("""[\\+,-/,%]""")
     var typeExceptionsPattern = Regex("""[^\\+,-/,%]|(\d+[^\s])""")
-    //var pattern = """^(\d+\s[+,-/,%])(\s\d+\s[+,-/,%])+$""".toRegex()
-
-    //println("Match: ${pattern.matchEntire(jumps)}; pattern value: ${jumps.split(pattern)}")
 
     for (jump in jumps.split(" ")) {
 
