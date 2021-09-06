@@ -74,7 +74,7 @@ fun dateStrToDigit(str: String): String {
     var day: Int = 0
     var month: String = ""
     var monthMaxDay = 0
-    var year: Int = 0
+    var year: Int = -1
     val pattern = """\d{1,2}\s[А-Яа-я]+\s\d+""".toRegex()
 
     val monthVal = mapOf<String, Pair<String, Int>>(
@@ -100,11 +100,10 @@ fun dateStrToDigit(str: String): String {
             } else if (month == "") {
                 month = (monthVal[word]?.first ?: "")
                 monthMaxDay = (monthVal[word]?.second ?: 0)
-            } else if (year == 0) {
+            } else if (year == -1) {
                 year = word.toInt()
             }
-            //println("Day $day; month $month; year $year; str: $word")
-            //println("monthMaxDay: $monthMaxDay")
+
         }
         // Високосный год
         if (year % 4 == 0 && month == "02") {
@@ -115,7 +114,7 @@ fun dateStrToDigit(str: String): String {
             return ""
         }
     }
-    if (day == 0 || month == "" || year == 0) {
+    if (day == 0 || month == "" || year == -1) {
         return ""
     }
     return String.format("%02d.%s.%d", day, month, year)
@@ -150,7 +149,7 @@ fun dateDigitToStr(digital: String): String {
     var day: Int = 0
     var month: String = ""
     var monthMaxDay = 0
-    var year: Int = 0
+    var year: Int = -1
     var buf: String = ""
     val pattern = """\d{1,2}.\d{1,2}.\d+""".toRegex()
 
@@ -165,20 +164,18 @@ fun dateDigitToStr(digital: String): String {
                 }
                 2 -> year = buf.toInt()
             }
-            println("Day $day; month $month; year $year; str: ${digital.split(".")[wordNum]}")
-
         }
         // Високосный год
-        if (year % 4 == 0 && month == "02") {
+        if (year % 4 == 0 && month == "февраля") {
             monthMaxDay += 1
         }
-        println("monthMaxDay: $monthMaxDay")
+
         if (day > 31 || day < 1 || (month == "") || day > monthMaxDay) {
             return ""
         }
     }
 
-    if (day == 0 || month == "" || year == 0) {
+    if (day == 0 || month == "" || year == -1) {
         return ""
     }
     return String.format("%d %s %d", day, month, year)
