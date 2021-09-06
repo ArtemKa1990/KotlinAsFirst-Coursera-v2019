@@ -93,28 +93,25 @@ fun dateStrToDigit(str: String): String {
     )
 
     if (pattern.matches(str)) {
-        for (wordNum in str.split(" ")) {
-            println("monthMaxDay: ${monthVal[wordNum]?.first}")
+        for (word in str.split(" ")) {
+
             if (day == 0) {
-                day = wordNum.toInt()
+                day = word.toInt()
             } else if (month == "") {
-                month = (monthVal[wordNum]?.first ?: "")
-                monthMaxDay = (monthVal[wordNum]?.second ?: 0)
+                month = (monthVal[word]?.first ?: "")
+                monthMaxDay = (monthVal[word]?.second ?: 0)
             } else if (year == 0) {
-                year = wordNum.toInt()
+                year = word.toInt()
             }
-
+            //println("Day $day; month $month; year $year; str: $word")
+            //println("monthMaxDay: $monthMaxDay")
         }
-        if (day > 31 || day < 1 || (month == "")) {
-            return ""
-        } else if (day > monthMaxDay) {
-            return ""
-        }
-
         // Високосный год
-        if ((year % 4 == 0 && month == "02" && day > monthMaxDay + 1)) {
-            return ""
-        } else if (year % 4 != 0 && day > monthMaxDay) {
+        if (year % 4 == 0 && month == "02") {
+            monthMaxDay += 1
+        }
+
+        if (day > 31 || day < 1 || (month == "") || (day > monthMaxDay)) {
             return ""
         }
     }
@@ -147,7 +144,7 @@ fun dateDigitToStr(digital: String): String {
         "09" to Pair("сентября", 30),
         "10" to Pair("октября", 31),
         "11" to Pair("ноября", 30),
-        "12" to Pair("Декабря", 31)
+        "12" to Pair("декабря", 31)
     )
 
     var day: Int = 0
@@ -168,16 +165,16 @@ fun dateDigitToStr(digital: String): String {
                 }
                 2 -> year = buf.toInt()
             }
-            //println("Day $day; month $month; year $year; str: ${digital.split(".")[wordNum]}")
-            if (day > 31 || day < 1 || (wordNum == 1 && month == "")) {
-                return ""
-            }
-            // Високосный год
-            if ((year % 4 == 0 && month == "02" && day > monthMaxDay + 1)) {
-                return ""
-            } else if (year % 4 != 0 && day > monthMaxDay) {
-                return ""
-            }
+            println("Day $day; month $month; year $year; str: ${digital.split(".")[wordNum]}")
+
+        }
+        // Високосный год
+        if (year % 4 == 0 && month == "02") {
+            monthMaxDay += 1
+        }
+        println("monthMaxDay: $monthMaxDay")
+        if (day > 31 || day < 1 || (month == "") || day > monthMaxDay) {
+            return ""
         }
     }
 
