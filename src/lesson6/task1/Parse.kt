@@ -106,7 +106,7 @@ fun dateStrToDigit(str: String): String {
 
         }
         // Високосный год
-        if (year % 4 == 0 && month == "02") {
+        if (month == "02" && ((year % 100 != 0 && year % 4 == 0) || (year % 100 == 0 && year % 400 == 0))) {
             monthMaxDay += 1
         }
 
@@ -166,7 +166,7 @@ fun dateDigitToStr(digital: String): String {
             }
         }
         // Високосный год
-        if (year % 4 == 0 && month == "февраля") {
+        if (month == "февраля" && ((year % 100 != 0 && year % 4 == 0) || (year % 100 == 0 && year % 400 == 0))) {
             monthMaxDay += 1
         }
 
