@@ -75,7 +75,7 @@ fun dateStrToDigit(str: String): String {
     var month: String = ""
     var monthMaxDay = 0
     var year: Int = 0
-    val pattern = """\d{1,2}\s[А-Яа-я]+\s\d{1,4}""".toRegex()
+    val pattern = """\d{1,2}\s[А-Яа-я]+\s\d+""".toRegex()
 
     val monthVal = mapOf<String, Pair<String, Int>>(
         "января" to Pair("01", 31),
@@ -93,26 +93,29 @@ fun dateStrToDigit(str: String): String {
     )
 
     if (pattern.matches(str)) {
-        for (wordNum in str.split(" ").indices) {
-
-            when (wordNum) {
-                0 -> day = str.split(" ")[wordNum].toInt()
-                1 -> {
-                    month = (monthVal[str.split(" ")[wordNum]]?.first ?: "")
-                    monthMaxDay = (monthVal[str.split(" ")[wordNum]]?.second ?: 0)
-                }
-                2 -> year = str.split(" ")[wordNum].toInt()
+        for (wordNum in str.split(" ")) {
+            println("monthMaxDay: ${monthVal[wordNum]?.first}")
+            if (day == 0) {
+                day = wordNum.toInt()
+            } else if (month == "") {
+                month = (monthVal[wordNum]?.first ?: "")
+                monthMaxDay = (monthVal[wordNum]?.second ?: 0)
+            } else if (year == 0) {
+                year = wordNum.toInt()
             }
 
-            if (day > 31 || day < 1 || (wordNum == 1 && month == "")) {
-                return ""
-            }
-            // Високосный год
-            if ((year % 4 == 0 && month == "02" && day > monthMaxDay + 1)) {
-                return ""
-            } else if (year % 4 != 0 && day > monthMaxDay) {
-                return ""
-            }
+        }
+        if (day > 31 || day < 1 || (month == "")) {
+            return ""
+        } else if (day > monthMaxDay) {
+            return ""
+        }
+
+        // Високосный год
+        if ((year % 4 == 0 && month == "02" && day > monthMaxDay + 1)) {
+            return ""
+        } else if (year % 4 != 0 && day > monthMaxDay) {
+            return ""
         }
     }
     if (day == 0 || month == "" || year == 0) {
@@ -152,7 +155,7 @@ fun dateDigitToStr(digital: String): String {
     var monthMaxDay = 0
     var year: Int = 0
     var buf: String = ""
-    val pattern = """\d{1,2}.\d{1,2}.\d{4}""".toRegex()
+    val pattern = """\d{1,2}.\d{1,2}.\d+""".toRegex()
 
     if (pattern.matches(digital)) {
         for (wordNum in digital.split(".").indices) {
@@ -165,7 +168,7 @@ fun dateDigitToStr(digital: String): String {
                 }
                 2 -> year = buf.toInt()
             }
-            println("Day $day; month $month; year $year; str: ${digital.split(".")[wordNum]}")
+            //println("Day $day; month $month; year $year; str: ${digital.split(".")[wordNum]}")
             if (day > 31 || day < 1 || (wordNum == 1 && month == "")) {
                 return ""
             }
@@ -181,7 +184,7 @@ fun dateDigitToStr(digital: String): String {
     if (day == 0 || month == "" || year == 0) {
         return ""
     }
-    return String.format("%d %s %4d", day, month, year)
+    return String.format("%d %s %d", day, month, year)
 }
 
 /**
