@@ -75,7 +75,7 @@ fun dateStrToDigit(str: String): String {
     var month: String = ""
     var monthMaxDay = 0
     var year: Int = 0
-    val pattern = """\d{1,2}\s[А-Яа-я]+\s\d+""".toRegex()
+    val pattern = """\d{1,2}\s[А-Яа-я]+\s\d{1,4}""".toRegex()
 
     val monthVal = mapOf<String, Pair<String, Int>>(
         "января" to Pair("01", 31),
@@ -103,7 +103,7 @@ fun dateStrToDigit(str: String): String {
                 }
                 2 -> year = str.split(" ")[wordNum].toInt()
             }
-            println("Day $day; month $month; year $year; str: ${str.split(" ")[wordNum]}")
+
             if (day > 31 || day < 1 || (wordNum == 1 && month == "")) {
                 return ""
             }
