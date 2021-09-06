@@ -75,6 +75,7 @@ fun dateStrToDigit(str: String): String {
     var month: String = ""
     var monthMaxDay = 0
     var year: Int = -1
+
     val pattern = """\d{1,2}\s[А-Яа-я]+\s\d+""".toRegex()
 
     val monthVal = mapOf<String, Pair<String, Int>>(
