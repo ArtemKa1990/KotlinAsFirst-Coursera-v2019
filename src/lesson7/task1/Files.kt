@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import kotlin.collections.ArrayDeque
 
 /**
  * Пример
@@ -212,6 +213,12 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     TODO()
 }
 
+fun main() {
+    //markdownToHtmlSimple("Lesson7Test.txt", "Lesson7Test_Result.txt")
+    markdownToHtmlSimple("Lesson7Test_1.txt", "Lesson7Test_1_Result.txt")
+}
+
+
 /**
  * Сложная
  *
@@ -244,21 +251,113 @@ Suspendisse ~~et elit in enim tempus iaculis~~.
  *
  * Соответствующий выходной файл:
 <html>
-    <body>
-        <p>
-            Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
-            Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
-        </p>
-        <p>
-            Suspendisse <s>et elit in enim tempus iaculis</s>.
-        </p>
-    </body>
+<body>
+<p>
+Lorem ipsum <i>dolor sit amet</i>, consectetur <b>adipiscing</b> elit.
+Vestibulum lobortis. <s>Est vehicula rutrum <i>suscipit</i></s>, ipsum <s>lib</s>ero <i>placerat <b>tortor</b></i>.
+</p>
+<p>
+Suspendisse <s>et elit in enim tempus iaculis</s>.
+</p>
+</body>
 </html>
  *
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val someTextFile =
+        File("C:\\Users\\artem\\Documents\\Android\\KotlinAsFirst-Coursera-v2019\\Lesson7Tests\\$inputName")
+    val someTextOutput =
+        File("C:\\Users\\artem\\Documents\\Android\\KotlinAsFirst-Coursera-v2019\\Lesson7Tests\\$outputName").bufferedWriter()
+
+    var resultWord = ""
+    var buffer = ""
+    val indent = "         "
+    var textFilled = false
+    val newLine = Regex("\n").toString()
+    var stackOfWordsAndTags: ArrayDeque<String> = ArrayDeque<String>()
+
+    var textLength = 0
+
+    stackOfWordsAndTags.addFirst("</html>")
+    stackOfWordsAndTags.addFirst(newLine)
+    stackOfWordsAndTags.addFirst("    </body>")
+    stackOfWordsAndTags.addFirst(newLine)
+
+    for (i in someTextFile.readLines().reversed()) {
+        //textLength = i.length
+
+        //someTextOutput.write("<html>")
+        //someTextOutput.write("    <body>")
+        //println("Some text: $i")
+        //someTextOutput.write(i)
+        //someTextOutput.write("    </body>")
+        //someTextOutput.write("</html>")
+
+        if ((i.isNotEmpty() && !textFilled) || someTextFile.readLines().reversed().first() == i) {
+            stackOfWordsAndTags.addFirst("        </p>")
+            stackOfWordsAndTags.addFirst(newLine)
+            println("</p>WordsAndTags: ${stackOfWordsAndTags.first()} emptyLine: $textFilled; i: $i")
+        }
+        if (i.isNotEmpty()) {
+            textFilled = true
+            for (word in i.split(" ").reversed()) {
+                resultWord = when {
+                    i.isNotEmpty() && i.split(" ").reversed().first() != word && i.split(" ").reversed()
+                        .last() != word -> "$word "
+                    i.split(" ").reversed().last() == word -> "${indent + word} "
+                    else -> word
+                }
+                //Здесь должен быть блок для замены символов, которые не обрамляют текст на закрывающие теги
+
+                //Ищем открывающий тег, у которого может быть закрывающий тег далее в другом слове
+                if (Regex("\\*\\*.*(\\w|[А-Яа-я])+").containsMatchIn(resultWord)) {
+                    resultWord = Regex("\\*\\*").replaceFirst(resultWord, "<b>")
+                }
+
+                if (Regex("(\\w|[А-Яа-я])+.*\\*\\*").containsMatchIn(resultWord)) {
+                    resultWord = Regex("\\*\\*").replaceFirst(resultWord, "</b>")
+                }
+
+                if (Regex("\\*.*(\\w|[А-Яа-я])+").containsMatchIn(resultWord)) {
+                    resultWord = Regex("\\*").replaceFirst(resultWord, "<i>")
+                }
+                if (Regex("(\\w|[А-Яа-я])+.*\\*").containsMatchIn(resultWord)) {
+                    resultWord = Regex("\\*").replaceFirst(resultWord, "</i>")
+                }
+
+                if (Regex("~~.*(\\w|[А-Яа-я])+").containsMatchIn(resultWord)) {
+                    resultWord = Regex("~~").replaceFirst(resultWord, "<s>")
+                }
+                if (Regex("(\\w|[А-Яа-я])+.*~~").containsMatchIn(resultWord)) {
+                    resultWord = Regex("~~").replaceFirst(resultWord, "</s>")
+                }
+
+                stackOfWordsAndTags.addFirst(resultWord)
+            }
+            stackOfWordsAndTags.addFirst(newLine)
+        }
+
+        if ((someTextFile.readLines().reversed().last() == i
+                    || someTextFile.readLines().reversed().first() == i) || (i.isEmpty() && textFilled)
+        ) {
+            println("<p>WordsAndTags: ${stackOfWordsAndTags.first()} emptyLine: $textFilled; i: $i; stackOfWordsAndTags[0]: ${stackOfWordsAndTags[0]}; stackOfWordsAndTags[1]: ${stackOfWordsAndTags[1]};  ")
+            stackOfWordsAndTags.addFirst("        <p>")
+            stackOfWordsAndTags.addFirst(newLine)
+            textFilled = false
+        }
+
+    }
+    if (stackOfWordsAndTags.size > 4) {
+        stackOfWordsAndTags.addFirst("    <body>")
+        stackOfWordsAndTags.addFirst(newLine)
+        stackOfWordsAndTags.addFirst("<html>")
+    }
+
+    for (text in stackOfWordsAndTags) {
+        someTextOutput.write(text)
+    }
+    someTextOutput.close()
 }
 
 /**
@@ -295,67 +394,67 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  *
  * Пример входного файла:
 ///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
-* Утка по-пекински
-    * Утка
-    * Соус
-* Салат Оливье
-    1. Мясо
-        * Или колбаса
-    2. Майонез
-    3. Картофель
-    4. Что-то там ещё
-* Помидоры
-* Фрукты
-    1. Бананы
-    23. Яблоки
-        1. Красные
-        2. Зелёные
+ * Утка по-пекински
+ * Утка
+ * Соус
+ * Салат Оливье
+1. Мясо
+ * Или колбаса
+2. Майонез
+3. Картофель
+4. Что-то там ещё
+ * Помидоры
+ * Фрукты
+1. Бананы
+23. Яблоки
+1. Красные
+2. Зелёные
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  *
  *
  * Соответствующий выходной файл:
 ///////////////////////////////начало файла/////////////////////////////////////////////////////////////////////////////
 <html>
-  <body>
-    <ul>
-      <li>
-        Утка по-пекински
-        <ul>
-          <li>Утка</li>
-          <li>Соус</li>
-        </ul>
-      </li>
-      <li>
-        Салат Оливье
-        <ol>
-          <li>Мясо
-            <ul>
-              <li>
-                  Или колбаса
-              </li>
-            </ul>
-          </li>
-          <li>Майонез</li>
-          <li>Картофель</li>
-          <li>Что-то там ещё</li>
-        </ol>
-      </li>
-      <li>Помидоры</li>
-      <li>
-        Фрукты
-        <ol>
-          <li>Бананы</li>
-          <li>
-            Яблоки
-            <ol>
-              <li>Красные</li>
-              <li>Зелёные</li>
-            </ol>
-          </li>
-        </ol>
-      </li>
-    </ul>
-  </body>
+<body>
+<ul>
+<li>
+Утка по-пекински
+<ul>
+<li>Утка</li>
+<li>Соус</li>
+</ul>
+</li>
+<li>
+Салат Оливье
+<ol>
+<li>Мясо
+<ul>
+<li>
+Или колбаса
+</li>
+</ul>
+</li>
+<li>Майонез</li>
+<li>Картофель</li>
+<li>Что-то там ещё</li>
+</ol>
+</li>
+<li>Помидоры</li>
+<li>
+Фрукты
+<ol>
+<li>Бананы</li>
+<li>
+Яблоки
+<ol>
+<li>Красные</li>
+<li>Зелёные</li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+</body>
 </html>
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
@@ -382,23 +481,23 @@ fun markdownToHtml(inputName: String, outputName: String) {
  * Вывести в выходной файл процесс умножения столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 111):
-   19935
-*    111
+19935
+ *    111
 --------
-   19935
+19935
 + 19935
 +19935
 --------
- 2212785
+2212785
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  * Нули в множителе обрабатывать так же, как и остальные цифры:
-  235
-*  10
+235
+ *  10
 -----
-    0
+0
 +235
 -----
- 2350
+2350
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
@@ -412,16 +511,16 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  * Вывести в выходной файл процесс деления столбиком числа lhv (> 0) на число rhv (> 0).
  *
  * Пример (для lhv == 19935, rhv == 22):
-  19935 | 22
- -198     906
- ----
-    13
-    -0
-    --
-    135
-   -132
-   ----
-      3
+19935 | 22
+-198     906
+----
+13
+-0
+--
+135
+-132
+----
+3
 
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  *
