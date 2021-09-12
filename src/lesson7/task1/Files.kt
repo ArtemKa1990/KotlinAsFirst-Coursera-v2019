@@ -287,13 +287,10 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val someTextOutput = File(outputName).bufferedWriter()
 
     var resultWord = ""
-    var buffer = ""
     val indent = "         "
     var textFilled = false
     val newLine = Regex("\n").toString()
     var stackOfWordsAndTags: ArrayDeque<String> = ArrayDeque<String>()
-
-    var textLength = 0
 
     stackOfWordsAndTags.addFirst("</html>")
     stackOfWordsAndTags.addFirst(newLine)
@@ -305,7 +302,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         if ((i.isNotEmpty() && !textFilled) || someTextFile.readLines().reversed().first() == i) {
             stackOfWordsAndTags.addFirst("        </p>")
             stackOfWordsAndTags.addFirst(newLine)
-            println("</p>WordsAndTags: ${stackOfWordsAndTags.first()} emptyLine: $textFilled; i: $i")
+            //println("</p>WordsAndTags: ${stackOfWordsAndTags.first()} emptyLine: $textFilled; i: $i")
         }
         if (i.isNotEmpty()) {
             textFilled = true
@@ -349,7 +346,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
         if ((someTextFile.readLines().reversed().last() == i
                     || someTextFile.readLines().reversed().first() == i) || (i.isEmpty() && textFilled)
         ) {
-            println("<p>WordsAndTags: ${stackOfWordsAndTags.first()} emptyLine: $textFilled; i: $i; stackOfWordsAndTags[0]: ${stackOfWordsAndTags[0]}; stackOfWordsAndTags[1]: ${stackOfWordsAndTags[1]};  ")
+            //println("<p>WordsAndTags: ${stackOfWordsAndTags.first()} emptyLine: $textFilled; i: $i; stackOfWordsAndTags[0]: ${stackOfWordsAndTags[0]}; stackOfWordsAndTags[1]: ${stackOfWordsAndTags[1]};  ")
             stackOfWordsAndTags.addFirst("        <p>")
             stackOfWordsAndTags.addFirst(newLine)
             textFilled = false
