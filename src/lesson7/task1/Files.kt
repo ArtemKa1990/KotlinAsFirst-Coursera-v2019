@@ -283,10 +283,8 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val someTextFile =
-        File("C:\\Users\\artem\\Documents\\Android\\KotlinAsFirst-Coursera-v2019\\Lesson7Tests\\$inputName")
-    val someTextOutput =
-        File("C:\\Users\\artem\\Documents\\Android\\KotlinAsFirst-Coursera-v2019\\Lesson7Tests\\$outputName").bufferedWriter()
+    val someTextFile = File(inputName)
+    val someTextOutput = File(outputName).bufferedWriter()
 
     var resultWord = ""
     var buffer = ""
@@ -470,10 +468,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    val someTextFile =
-        File(inputName)
-    val someTextOutput =
-        File(outputName).bufferedWriter()
+    val someTextFile = File(inputName)
+    val someTextOutput = File(outputName).bufferedWriter()
     val newLine = Regex("\n").toString()
 
     var currentLevel: Int
@@ -632,8 +628,6 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
             //Записать уровень и тип списка в стек
             stackOfTags.addFirst(Pair(currentLevel, "*"))
         }
-        // println("line:${bufferStack.first()}; currentLevel: $currentLevel")
-        //resultStack.addFirst(line)
     }
 
     when (stackOfTags[stackOfTags.indexOfFirst { it.first == 0 }].second) {
@@ -654,7 +648,6 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
     for (text in resultStack) {
         someTextOutput.write(text.second)
         someTextOutput.write(newLine)
-        //println("line:$text;")
     }
     someTextOutput.close()
 }
