@@ -262,7 +262,7 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val someTextFile = File(inputName)
     val someTextOutput = File(outputName).bufferedWriter()
-    /*
+
     var resultWord = ""
     val indent = "         "
     var textFilled = false
@@ -338,7 +338,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
 
     for (text in stackOfWordsAndTags) {
         someTextOutput.write(text)
-    }*/
+    }
 
     someTextOutput.close()
 }
@@ -443,7 +443,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    /*val someTextFile = File(inputName)
+    val someTextFile = File(inputName)
     val someTextOutput = File(outputName).bufferedWriter()
     val newLine = Regex("\n").toString()
 
@@ -622,8 +622,7 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
         someTextOutput.write(text.second)
         someTextOutput.write(newLine)
     }
-    someTextOutput.close()*/
-    TODO()
+    someTextOutput.close()
 }
 
 /**
