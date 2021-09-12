@@ -214,11 +214,6 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     TODO()
 }
 
-fun main() {
-    markdownToHtmlLists("input/markdown_lists_3.md", "markdown_lists_results_3.txt")
-}
-
-
 /**
  * Сложная
  *

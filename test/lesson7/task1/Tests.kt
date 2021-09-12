@@ -327,7 +327,7 @@ Basic, Ruby, Swift.
                     """.trimIndent().replace(Regex("[\\s\\n\\t]"), "")
         assertEquals(expected, result)
 
-        File("temp.html").delete()
+        File("temp_1.html").delete()
     }
 
     private fun checkHtmlListsExample_2() {
@@ -367,7 +367,7 @@ Basic, Ruby, Swift.
                     """.trimIndent().replace(Regex("[\\s\\n\\t]"), "")
         assertEquals(expected, result)
 
-        File("temp.html").delete()
+        File("temp_2.html").delete()
     }
 
     private fun checkHtmlListsExample_3() {
@@ -452,7 +452,7 @@ Basic, Ruby, Swift.
                     """.trimIndent().replace(Regex("[\\s\\n\\t]"), "")
         assertEquals(expected, result)
 
-        File("temp.html").delete()
+        File("temp_3.html").delete()
     }
 
     @Test
