@@ -215,25 +215,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
 }
 
 fun main() {
-    //markdownToHtmlSimple("Lesson7Test.txt", "Lesson7Test_Result.txt")
-    //markdownToHtmlSimple("Lesson7Test_1.txt", "Lesson7Test_1_Result.txt")
     markdownToHtmlLists("input/markdown_lists_3.md", "markdown_lists_results_3.txt")
-    //println("Result: ${log2(12.0).toInt()}")
-    //var testStack: ArrayDeque<Pair<Int, Pair<String, String>>> = ArrayDeque<Pair<Int, Pair<String, String>>>()
-    //var testCollection : Collection<String> = listOf("<li>", "Мясо", "<ul>", "<li>Или колбаса</li>", "<li>Майонез</li>", "<li>Картофель</li>", "<li>Что-то там ещё</li>", "</ol>")
-    //var testStack: ArrayDeque<String> = ArrayDeque(testCollection)
-    //println("Result Index: ${testStack.indexOfFirst { it == "</ul>" }}")
-    //println("Result: ${testStack.first().first}")
-    //testStack.addFirst(Pair(1, Pair("n", "Масло подсолнечное")))
-    //testStack.addFirst(Pair(2, Pair("n", "Картофель")))
-    //testStack.addFirst(Pair(2, Pair("n", "Майонез")))
-    //testStack.addFirst(Pair(3, Pair("*", "Или колбаса")))
-    //testStack.add(3, Pair(2, Pair("</p>", "")))
-    //testStack.addFirst(Pair(2, Pair("n", "Мясо")))
-    //testStack.addFirst(Pair(1, Pair("n", "Фрукты")))
-    //testStack.removeIf { it.first == 3 }
-//    println("Last Second Level Value: ${testStack[testStack.indexOfFirst { it.first == 2 && it.second.first == "n"}]}")
-    //println("Result List: $testStack");
 }
 
 
@@ -285,7 +267,7 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val someTextFile = File(inputName)
     val someTextOutput = File(outputName).bufferedWriter()
-
+    /*
     var resultWord = ""
     val indent = "         "
     var textFilled = false
@@ -361,7 +343,8 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
 
     for (text in stackOfWordsAndTags) {
         someTextOutput.write(text)
-    }
+    }*/
+
     someTextOutput.close()
 }
 
@@ -465,7 +448,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    val someTextFile = File(inputName)
+    /*val someTextFile = File(inputName)
     val someTextOutput = File(outputName).bufferedWriter()
     val newLine = Regex("\n").toString()
 
@@ -474,14 +457,12 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
     var indexOfFirstCurLevelRecord: Int
     var needCloseInTheEnd = false
     var startListPosition = 0
-    /* Данный стек хранит в себе иерархию из файла в виде пары: Уровень вложенности <Int>, Тип списка <String>
-        при выходе из самого низкого уровня, его элементы должны очищаться из списка
-     */
+    //Данный стек хранит в себе иерархию из файла в виде пары: Уровень вложенности <Int>, Тип списка <String>
+    //    при выходе из самого низкого уровня, его элементы должны очищаться из списка
     var stackOfTags: ArrayDeque<Pair<Int, String>> = ArrayDeque()
 
-    /* Данный стек хранит в себе иерархию из файла в виде пары: Уровень вложенности <Int>, Текст из файла <String>
-        Уровень используется для определения позиции закрывающего тега более высокого уровня
-     */
+    // Данный стек хранит в себе иерархию из файла в виде пары: Уровень вложенности <Int>, Текст из файла <String>
+    // Уровень используется для определения позиции закрывающего тега более высокого уровня
     var resultStack: ArrayDeque<Pair<Int, String>> = ArrayDeque()
     var text = ""
     var numList = Regex("\\d*\\.\\s")
@@ -646,7 +627,8 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
         someTextOutput.write(text.second)
         someTextOutput.write(newLine)
     }
-    someTextOutput.close()
+    someTextOutput.close()*/
+    TODO()
 }
 
 /**
