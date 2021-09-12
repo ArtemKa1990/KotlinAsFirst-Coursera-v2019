@@ -217,7 +217,8 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
 fun main() {
     //markdownToHtmlSimple("Lesson7Test.txt", "Lesson7Test_Result.txt")
     //markdownToHtmlSimple("Lesson7Test_1.txt", "Lesson7Test_1_Result.txt")
-    markdownToHtmlLists("markdown_lists_2.txt", "markdown_lists_results_2.txt")
+    markdownToHtmlLists("input/markdown_lists_3.md", "markdown_lists_results_3.txt")
+    //println("Result: ${log2(12.0).toInt()}")
     //var testStack: ArrayDeque<Pair<Int, Pair<String, String>>> = ArrayDeque<Pair<Int, Pair<String, String>>>()
     //var testCollection : Collection<String> = listOf("<li>", "Мясо", "<ul>", "<li>Или колбаса</li>", "<li>Майонез</li>", "<li>Картофель</li>", "<li>Что-то там ещё</li>", "</ol>")
     //var testStack: ArrayDeque<String> = ArrayDeque(testCollection)
@@ -470,12 +471,15 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
  */
 fun markdownToHtmlLists(inputName: String, outputName: String) {
     val someTextFile =
-        File("C:\\Users\\artem\\Documents\\Android\\KotlinAsFirst-Coursera-v2019\\Lesson7Tests\\$inputName")
+        File(inputName)
     val someTextOutput =
-        File("C:\\Users\\artem\\Documents\\Android\\KotlinAsFirst-Coursera-v2019\\Lesson7Tests\\$outputName").bufferedWriter()
+        File(outputName).bufferedWriter()
     val newLine = Regex("\n").toString()
 
-    var currentLevel = 0
+    var currentLevel: Int
+    var indexOfFirstZeroLevelRecord: Int
+    var indexOfFirstCurLevelRecord: Int
+    var needCloseInTheEnd = false
     var startListPosition = 0
     /* Данный стек хранит в себе иерархию из файла в виде пары: Уровень вложенности <Int>, Тип списка <String>
         при выходе из самого низкого уровня, его элементы должны очищаться из списка
@@ -494,24 +498,20 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
 
     for (line in someTextFile.readLines().reversed()) {
 
+        //Очистить переменную
+        startListPosition = 0
+        needCloseInTheEnd = false
+
         if (numList.containsMatchIn(line)) {
             // Вычитать текст и определить его уровень
             text = line.substringAfter(".").replaceFirst(" ", "")
-            currentLevel = (log2(line.substringBefore(".").count { it == ' ' }.toDouble()).toInt())
-            currentLevel = when {
-                currentLevel < 0 -> 0
-                else -> currentLevel
-            }
+            currentLevel = (line.substringBefore(".").count { it == ' ' } / 4)
 
-            // Произошло изменение типа списка на самом первом уровне...Добавить открывающий тег с типом предыдущего списка
-            // Добавить закрывающий тег с типом нового списка
-            if (currentLevel == 0) {
-                if (stackOfTags.isNotEmpty()
-                    && (stackOfTags.firstOrNull()?.first ?: -1) == currentLevel
-                    && stackOfTags[stackOfTags.indexOfFirst { it.first == currentLevel }].second != "."
-                ) {
-                    resultStack.addFirst(Pair(currentLevel, "<ul>"))
-                    resultStack.addFirst(Pair(currentLevel, "</ol>"))
+            // Текущий самый верхний уровень. Если он отличается по типу списка, то нужно добавить открывающий тег
+            // на первом уровне предыдущего списка
+            if (currentLevel == 0 && stackOfTags.isNotEmpty() && stackOfTags.indexOfFirst { it.first == 0 } > 0) {
+                if (stackOfTags[stackOfTags.indexOfFirst { it.first == 0 }].second == "*") {
+                    resultStack.add(resultStack.indexOfFirst { it.first == currentLevel }, Pair(0, "<ul>"))
                 }
             }
 
@@ -527,34 +527,38 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
                 //Произошло смещение уровня на уровень выше...Добавить открывающий тег по типу списка
                 // для последнего уровня, который обрабатывался
                 if (stackOfTags.first().second == ".") {
-                    //startListPosition = resultStack.indexOfLast { it.first == currentLevel }
-                    resultStack.addFirst(Pair(currentLevel, "<ol>"))
+                    resultStack.addFirst(Pair(currentLevel + 1, "<ol>"))
                 } else if (stackOfTags.first().second == "*") {
-                    //startListPosition = resultStack.indexOfLast { it.first == currentLevel }
-                    resultStack.addFirst(Pair(currentLevel, "<ul>"))
+                    resultStack.addFirst(Pair(currentLevel + 1, "<ul>"))
                 }
 
-                var i = 1
-                while (resultStack.indexOfLast { it.first == currentLevel + i } > 0
-                    && resultStack.indexOfFirst { it.first == 0 } < startListPosition) {
-                    startListPosition = resultStack.indexOfLast { it.first == currentLevel + i }
-                    i += 1
+                indexOfFirstZeroLevelRecord = resultStack.indexOfFirst { it.first == 0 }
+                indexOfFirstCurLevelRecord = resultStack.indexOfFirst { it.first == currentLevel }
+                if (indexOfFirstZeroLevelRecord == -1 && indexOfFirstCurLevelRecord == -1) {
+                    startListPosition = resultStack.size
+                } else {
+                    for (closePosition in resultStack.indices) {
+                        if (indexOfFirstZeroLevelRecord == startListPosition || (indexOfFirstCurLevelRecord == startListPosition)) {
+                            break
+                        }
+                        startListPosition = closePosition
+                    }
                 }
 
-                if (startListPosition <= 0) {
-                    startListPosition = resultStack.size - 2
-                }
-
-                resultStack.add(startListPosition + 1, Pair(currentLevel, "</li>"))
+                resultStack.add(startListPosition, Pair(currentLevel, "</li>"))
                 resultStack.addFirst(Pair(currentLevel, starList.replace(text, "")))
                 resultStack.addFirst(Pair(currentLevel, "<li>"))
 
-                if ((stackOfTags.firstOrNull()?.first ?: -1) != currentLevel && currentLevel == 0) {
-                    resultStack.addLast(Pair(currentLevel, "</ol>"))
+                if ((indexOfFirstZeroLevelRecord == -1 && (currentLevel == 0 || indexOfFirstCurLevelRecord == -1))
+                    || (indexOfFirstCurLevelRecord >= startListPosition
+                            && stackOfTags[stackOfTags.indexOfFirst { it.first == currentLevel }].second != ".")
+                    || (indexOfFirstZeroLevelRecord == startListPosition && indexOfFirstZeroLevelRecord != indexOfFirstCurLevelRecord)
+                ) {
+                    resultStack.add(startListPosition + 3, Pair(currentLevel, "</ol>"))
                 }
             } else {
                 if (stackOfTags.first().second == "*") {
-                    resultStack.addFirst(Pair(currentLevel, "<ul>"))
+                    resultStack.addFirst(Pair(currentLevel + 1, "<ul>"))
                     resultStack.addFirst(Pair(currentLevel, "</ol>"))
                 }
 
@@ -563,26 +567,16 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
 
             //Записать уровень и тип списка в стек
             stackOfTags.addFirst(Pair(currentLevel, "."))
-            //Очистить переменную
-            startListPosition = 0
 
         } else if (starList.containsMatchIn(line)) {
             text = line.substringAfter("*").replaceFirst(" ", "")
-            currentLevel = log2(line.substringBefore("*").count { it == ' ' }.toDouble()).toInt()
-            currentLevel = when {
-                currentLevel < 0 -> 0
-                else -> currentLevel
-            }
+            currentLevel = (line.substringBefore(".").count { it == ' ' } / 4)
 
-            // Произошло изменение типа списка на самом первом уровне...Добавить открывающий тег с типом предыдущего списка
-            // Добавить закрывающий тег с типом нового списка
-            if (currentLevel == 0) {
-                if (stackOfTags.isNotEmpty()
-                    && (stackOfTags.firstOrNull()?.first ?: -1) == currentLevel
-                    && stackOfTags[stackOfTags.indexOfFirst { it.first == currentLevel }].second != "*"
-                ) {
-                    resultStack.addFirst(Pair(currentLevel, "<ol>"))
-                    resultStack.addFirst(Pair(currentLevel, "</ul>"))
+            // Текущий самый верхний уровень. Если он отличается по типу списка, то нужно добавить открывающий тег
+            // на первом уровне предыдущего списка
+            if (currentLevel == 0 && stackOfTags.isNotEmpty() && stackOfTags.indexOfFirst { it.first == 0 } > 0) {
+                if (stackOfTags[stackOfTags.indexOfFirst { it.first == 0 }].second == ".") {
+                    resultStack.add(resultStack.indexOfFirst { it.first == currentLevel }, Pair(0, "<ol>"))
                 }
             }
 
@@ -597,39 +591,36 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
             } else if (stackOfTags.first().first > currentLevel) {
                 //Произошло смещение уровня на уровень выше...Добавить открывающий тег по типу списка
                 // для последнего уровня, который обрабатывался
-
-                var indexOfFirstZeroRecord = resultStack.indexOfFirst { it.first == 0 }
                 if (stackOfTags.first().second == ".") {
-                    resultStack.addFirst(Pair(currentLevel, "<ol>"))
+                    resultStack.addFirst(Pair(currentLevel + 1, "<ol>"))
                 } else if (stackOfTags.first().second == "*") {
-                    resultStack.addFirst(Pair(currentLevel, "<ul>"))
+                    resultStack.addFirst(Pair(currentLevel + 1, "<ul>"))
                 }
 
-                /*var i = 2
-                var j = resultStack.in//indexOfLast { it.first == currentLevel + i }
-                while (resultStack.indexOfLast { it.first == currentLevel + i } > 0
-                    && indexOfFirstZeroRecord+3 > startListPosition) {
-                    j = resultStack.indexOfLast { it.first == currentLevel + i }
-                    startListPosition = resultStack.indexOfLast { it.first == currentLevel + i }
-                    i += 1
-                }*/
-                for (closePosition in resultStack.indices) {
-                    if (indexOfFirstZeroRecord < startListPosition) {
-                        break
+                indexOfFirstZeroLevelRecord = resultStack.indexOfFirst { it.first == 0 }
+                indexOfFirstCurLevelRecord = resultStack.indexOfFirst { it.first == currentLevel }
+                if (indexOfFirstZeroLevelRecord == -1 && indexOfFirstCurLevelRecord == -1) {
+                    startListPosition = resultStack.size
+                } else {
+                    for (closePosition in resultStack.indices) {
+                        if (indexOfFirstZeroLevelRecord == startListPosition || (indexOfFirstCurLevelRecord == startListPosition)) {
+                            break
+                        }
+                        startListPosition = closePosition
                     }
-                    startListPosition = closePosition
                 }
 
-                if (startListPosition <= 0) {
-                    startListPosition = resultStack.size - 2
-                }
                 resultStack.add(startListPosition, Pair(currentLevel, "</li>"))
                 resultStack.addFirst(Pair(currentLevel, starList.replace(text, "")))
                 resultStack.addFirst(Pair(currentLevel, "<li>"))
 
-               // if ((stackOfTags.firstOrNull()?.first ?: -1) != currentLevel && currentLevel == 0) {
-               //     resultStack.addLast(Pair(currentLevel, "</ul>"))
-               // }
+                if ((indexOfFirstZeroLevelRecord == -1 && (currentLevel == 0 || indexOfFirstCurLevelRecord == -1))
+                    || (indexOfFirstCurLevelRecord >= startListPosition
+                            && stackOfTags[stackOfTags.indexOfFirst { it.first == currentLevel }].second != "*")
+                    || (indexOfFirstZeroLevelRecord == startListPosition && indexOfFirstZeroLevelRecord != indexOfFirstCurLevelRecord)
+                ) {
+                    resultStack.add(startListPosition + 3, Pair(currentLevel, "</ul>"))
+                }
             } else {
                 if (stackOfTags.first().second == ".") {
                     resultStack.addFirst(Pair(currentLevel, "<ol>"))
@@ -640,10 +631,8 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
 
             //Записать уровень и тип списка в стек
             stackOfTags.addFirst(Pair(currentLevel, "*"))
-            //Очистить переменную
-            startListPosition = 0
         }
-       // println("line:${bufferStack.first()}; currentLevel: $currentLevel")
+        // println("line:${bufferStack.first()}; currentLevel: $currentLevel")
         //resultStack.addFirst(line)
     }
 
@@ -665,7 +654,7 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
     for (text in resultStack) {
         someTextOutput.write(text.second)
         someTextOutput.write(newLine)
-        println("line:$text;")
+        //println("line:$text;")
     }
     someTextOutput.close()
 }

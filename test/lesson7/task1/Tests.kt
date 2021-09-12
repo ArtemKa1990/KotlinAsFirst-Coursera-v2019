@@ -297,11 +297,175 @@ Basic, Ruby, Swift.
         File("temp.html").delete()
     }
 
+    private fun checkHtmlListsExample_1() {
+        val result = File("temp_1.html").readText().replace(Regex("[\\s\\n\\t]"), "")
+        val expected =
+            """
+                    <html>
+                      <body>
+                        <ul>
+                          <li>
+                            Салат Оливье
+                            <ul>
+                              <li>Может сыр</li>
+                            </ul>
+                            <ol>
+                              <li>
+                                Мясо
+                                <ul>
+                                  <li>Или колбаса</li>
+                                </ul>
+                              </li>
+                              <li>Майонез</li>
+                              <li>Картофель</li>
+                              <li>Что-то там ещё</li>
+                            </ol>
+                          </li>
+                        </ul>
+                      </body>
+                    </html>
+                    """.trimIndent().replace(Regex("[\\s\\n\\t]"), "")
+        assertEquals(expected, result)
+
+        File("temp.html").delete()
+    }
+
+    private fun checkHtmlListsExample_2() {
+        val result = File("temp_2.html").readText().replace(Regex("[\\s\\n\\t]"), "")
+        val expected =
+            """
+                    <html>
+                      <body>
+                        <ul>
+                          <li>
+                            Утка по-пекински
+                            <ul>
+                              <li>Утка</li>
+                              <li>Соус</li>
+                            </ul>
+                          </li>
+                          <li>
+                            Салат Оливье
+                            <ul>
+                              <li>Может сыр</li>
+                            </ul>
+                            <ol>
+                              <li>
+                                Мясо
+                                <ul>
+                                  <li>Или колбаса</li>
+                                </ul>
+                              </li>
+                              <li>Майонез</li>
+                              <li>Картофель</li>
+                              <li>Что-то там ещё</li>
+                            </ol>
+                          </li>
+                        </ul>
+                      </body>
+                    </html>
+                    """.trimIndent().replace(Regex("[\\s\\n\\t]"), "")
+        assertEquals(expected, result)
+
+        File("temp.html").delete()
+    }
+
+    private fun checkHtmlListsExample_3() {
+        val result = File("temp_3.html").readText().replace(Regex("[\\s\\n\\t]"), "")
+        val expected =
+            """
+                    <html>
+                      <body>
+                        <ul>
+                          <li>
+                            Утка по-пекински
+                            <ul>
+                              <li>Утка</li>
+                              <li>Соус</li>
+                            </ul>
+                          </li>
+                          <li>
+                            Салат Оливье
+                            <ol>
+                              <li>Мясо
+                                <ul>
+                                  <li>
+                                      Или колбаса
+                                  </li>
+                                </ul>
+                              </li>
+                              <li>Майонез</li>
+                              <li>Картофель</li>
+                              <li>Что-то там ещё</li>
+                            </ol>
+                          </li>
+                        </ul>
+                        <ol>
+                          <li>
+                            Помидоры
+                            <ul>
+                              <li>Черри</li>
+                              <li>Тепличные</li>
+                            </ul>
+                            <ol>
+                              <li>
+                              С огорода
+                                <ul>
+                                  <li>От Тёщи</li>
+                                  <li>
+                                  От Родителей
+                                    <ol>
+                                      <li>Летние и спелые</li>
+                                      <li>Покупные сезонные</li>
+                                    </ol>
+                                  </li>
+                                  <li>
+                                  От Друга
+                                    <ol>
+                                      <li>Натырил с чужого участка</li>
+                                      <li>Купил у таджиков с участка</li>
+                                      <li>Да хрен знает откуда у него огород</li>
+                                    </ol>
+                                  </li>
+                                </ul>
+                              </li>
+                            </ol>
+                          </li>
+                        </ol>
+                        <ul>
+                          <li>
+                            Фрукты
+                            <ol>
+                              <li>Бананы</li>
+                              <li>
+                                Яблоки
+                                <ol>
+                                  <li>Красные</li>
+                                  <li>Зелёные</li>
+                                </ol>
+                              </li>
+                            </ol>
+                          </li>
+                        </ul>
+                      </body>
+                    </html>
+                    """.trimIndent().replace(Regex("[\\s\\n\\t]"), "")
+        assertEquals(expected, result)
+
+        File("temp.html").delete()
+    }
+
     @Test
     @Tag("Hard")
     fun markdownToHtmlLists() {
         markdownToHtmlLists("input/markdown_lists.md", "temp.html")
         checkHtmlListsExample()
+        markdownToHtmlLists("input/markdown_lists_1.md", "temp_1.html")
+        checkHtmlListsExample_1()
+        markdownToHtmlLists("input/markdown_lists_2.md", "temp_2.html")
+        checkHtmlListsExample_2()
+        markdownToHtmlLists("input/markdown_lists_3.md", "temp_3.html")
+        checkHtmlListsExample_3()
     }
 
     @Test
