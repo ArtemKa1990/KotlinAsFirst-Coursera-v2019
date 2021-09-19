@@ -4,8 +4,9 @@ package lesson7.task1
 
 import java.io.BufferedWriter
 import java.io.File
-import java.util.ArrayDeque
-import kotlin.math.log2
+import java.util.Deque
+import java.util.LinkedList
+import kotlin.collections.ArrayDeque
 
 /**
  * Пример
@@ -268,7 +269,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     val indent = "         "
     var textFilled = false
     val newLine = Regex("\n").toString()
-    var stackOfWordsAndTags: ArrayDeque<String> = ArrayDeque<String>()
+    var stackOfWordsAndTags: Deque<String> = LinkedList();
 
     stackOfWordsAndTags.addFirst("</html>")
     stackOfWordsAndTags.addFirst(newLine)
@@ -450,29 +451,27 @@ fun main() {
  */
 
 fun addClosingToLine(
-    closingStackData: ArrayDeque<Pair<Int, String>>,
+    closingStackData: Deque<Pair<Int, String>>,
     line: Pair<Int, Pair<String, String>>
-): ArrayDeque<Pair<Int, String>> {
-    var closingData = closingStackData
-    if (closingData.isEmpty() || !closingData.contains(
+): Deque<Pair<Int, String>> {
+    if (closingStackData.isEmpty() || !closingStackData.contains(
             Pair(line.first, line.second.first)
         )
     ) {
-        closingData.addFirst(Pair(line.first, line.second.first))
+        closingStackData.addFirst(Pair(line.first, line.second.first))
     }
-    return closingData
+    return closingStackData
 }
 
 fun tryToCloseList(
     textData: BufferedWriter,
-    closingStackData: ArrayDeque<Pair<Int, String>>,
-    textInStackData: ArrayDeque<Pair<Int, Pair<String, String>>>
-): ArrayDeque<Pair<Int, String>> {
-    var closingData = closingStackData
+    closingStackData: Deque<Pair<Int, String>>,
+    textInStackData: Deque<Pair<Int, Pair<String, String>>>
+): Deque<Pair<Int, String>> {
     var closingBuffer: Pair<Int, String>
 
-    while (closingData.first().first >= textInStackData.first().first) {
-        closingBuffer = closingData.peekFirst()
+    while (closingStackData.first().first >= textInStackData.first().first) {
+        closingBuffer = closingStackData.peekFirst()
         //println("closingStackТекущий закрывающий тег на уровне: ${closingBuffer.first}; С типом: ${closingBuffer.second} - Следующий тег на уровне: ${textInStackData.first().first}; с типом: ${textInStackData.first().second.first}")
         if (closingBuffer.first == textInStackData.first().first && closingBuffer.second == textInStackData.first().second.first) {
             textData.write("</li>")
@@ -483,14 +482,14 @@ fun tryToCloseList(
                 "." -> textData.write("</ol>")
                 "*" -> textData.write("</ul>")
             }
-            closingData.removeFirst()
+            closingStackData.removeFirst()
         }
         when {
-            closingData.isEmpty() -> break
+            closingStackData.isEmpty() -> break
         }
     }
 
-    return closingData
+    return closingStackData
 }
 
 fun markdownToHtmlLists(inputName: String, outputName: String) {
@@ -500,17 +499,17 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
     var currentLevel: Int
 
     // Стек значений - Уровень, Тип списка, Текст
-    val levelsAndTypes: ArrayDeque<Pair<Int, Pair<String, String>>> = ArrayDeque()
+    val levelsAndTypes: Deque<Pair<Int, Pair<String, String>>> = LinkedList()
     var bufferLine: Pair<Int, Pair<String, String>>
     // Стек закрывающих тегов
-    var closingStack: ArrayDeque<Pair<Int, String>> = ArrayDeque() // Закрывающий стек - Уровень, Тип списка
+    var closingStack: Deque<Pair<Int, String>> = LinkedList() // Закрывающий стек - Уровень, Тип списка
     var closingBuffer: Pair<Int, String>
 
     var text = ""
     val numList = Regex("\\d*\\.\\s")
     val starList = Regex("\\*\\s")
 
-    // Составление карты уровней и типов тегов
+    // Составление карты уровней и типов тегов (Есть ощущение, что можно и без карты обойтись)
     someTextFile.readLines().reversed().forEach { s ->
         if (numList.containsMatchIn(s)) {
             text = s.substringAfter(".").replaceFirst(" ", "")
@@ -534,7 +533,7 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
         return
     }
 
-    levelsAndTypes.indices.forEach { rowNum ->
+    levelsAndTypes.indices.forEach {
         bufferLine = levelsAndTypes.poll() // Текущая запись
 
         if (levelsAndTypes.isEmpty()) {
@@ -549,7 +548,7 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
                 }
 
             }
-        } else if (bufferLine.first == levelsAndTypes.first().first && bufferLine.second.first == levelsAndTypes.first().second.first) { // На следующем элементе уровень и тип не изменятся - список не вложенный
+        } else {
             //println("1Обработка элемента: ${bufferLine.second.second}; Количество записей в стеке закрытия: ${closingStack.size}; Содержание текущей пары: ${closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))}")
             if (!closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))) {
                 when (bufferLine.second.first) {
@@ -557,55 +556,37 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
                     "*" -> someTextOutput.write("<ul>")
                 }
             }
-            someTextOutput.write("<li>" + bufferLine.second.second + "</li>")
-            addClosingToLine(closingStack, bufferLine)
 
-        } else if (bufferLine.first == levelsAndTypes.first().first && bufferLine.second.first != levelsAndTypes.first().second.first) { // На следующем элементе изменится только тип - список не вложенный
-            if (!closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))) {
-                when (bufferLine.second.first) {
-                    "." -> someTextOutput.write("<ol>")
-                    "*" -> someTextOutput.write("<ul>")
-                }
-            }
-            someTextOutput.write("<li>" + bufferLine.second.second)
+            if (bufferLine.first == levelsAndTypes.first().first && bufferLine.second.first == levelsAndTypes.first().second.first) { // На следующем элементе уровень и тип не изменятся - список не вложенный
 
-            addClosingToLine(closingStack, bufferLine)
-            //println("1Выполнить закрытие для элемента: ${bufferLine.second.second} Уровень первой записи в закрытии: ${closingStack.first().first} - Уровень следующей записи из текста: ${levelsAndTypes.first().first}")
 
-            closingStack = tryToCloseList(someTextOutput, closingStack, levelsAndTypes)
+                someTextOutput.write("<li>" + bufferLine.second.second + "</li>")
+                closingStack = addClosingToLine(closingStack, bufferLine)
 
-        } else { // Работа с вложенными списками
-            if (bufferLine.first < levelsAndTypes.first().first) { // Следующий элемент - это элемент вложенного списка
-                //println("2Обработка элемента: ${bufferLine.second.second}; Количество записей в стеке закрытия: ${closingStack.size}; Содержание текущей пары: ${closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))}")
-                if (!closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))) {
-                    when (bufferLine.second.first) {
-                        "." -> someTextOutput.write("<ol>")
-                        "*" -> someTextOutput.write("<ul>")
-                    }
-                }
-
-                someTextOutput.write("<li>")
-                someTextOutput.write(bufferLine.second.second)
-
-                addClosingToLine(closingStack, bufferLine)
-            } else if (bufferLine.first > levelsAndTypes.first().first) { //Следующий элемент - это элемент на уровне выше
-                //println("${bufferLine.second.second} - levelsAndTypes.first().first: ${levelsAndTypes.first().first}")
-                if (!closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))) {
-                    when (bufferLine.second.first) {
-                        "." -> someTextOutput.write("<ol>")
-                        "*" -> someTextOutput.write("<ul>")
-                    }
-                }
-
-                addClosingToLine(closingStack, bufferLine)
-
+            } else if (bufferLine.first == levelsAndTypes.first().first && bufferLine.second.first != levelsAndTypes.first().second.first) { // На следующем элементе изменится только тип - список не вложенный
                 someTextOutput.write("<li>" + bufferLine.second.second)
-
-                //println("2Выполнить закрытие для элемента: ${bufferLine.second.second} Уровень первой записи в закрытии: ${closingStack.first().first} - Уровень следующей записи из текста: ${levelsAndTypes.first().first}")
+                closingStack = addClosingToLine(closingStack, bufferLine)
+                //println("1Выполнить закрытие для элемента: ${bufferLine.second.second} Уровень первой записи в закрытии: ${closingStack.first().first} - Уровень следующей записи из текста: ${levelsAndTypes.first().first}")
                 closingStack = tryToCloseList(someTextOutput, closingStack, levelsAndTypes)
 
-            }
+            } else { // Работа с вложенными списками
+                if (bufferLine.first < levelsAndTypes.first().first) { // Следующий элемент - это элемент вложенного списка
 
+                    someTextOutput.write("<li>")
+                    someTextOutput.write(bufferLine.second.second)
+
+                    closingStack = addClosingToLine(closingStack, bufferLine)
+                } else if (bufferLine.first > levelsAndTypes.first().first) { //Следующий элемент - это элемент на уровне выше
+                    closingStack = addClosingToLine(closingStack, bufferLine)
+
+                    someTextOutput.write("<li>" + bufferLine.second.second)
+
+                    //println("2Выполнить закрытие для элемента: ${bufferLine.second.second} Уровень первой записи в закрытии: ${closingStack.first().first} - Уровень следующей записи из текста: ${levelsAndTypes.first().first}")
+                    closingStack = tryToCloseList(someTextOutput, closingStack, levelsAndTypes)
+
+                }
+
+            }
         }
     }
 
