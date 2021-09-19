@@ -304,34 +304,35 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     val someInputText = File(inputName)
     val someOutputText = File(outputName).bufferedWriter()
+    var maxLength = 0
     var firstAdd = true
     var containsLetter = false
 
-    val maxLength: Int = someInputText.useLines { s -> s.maxOf { it.length } }
-    //for (word in someInputText.readLines()) {
-    //    if (maxLength < word.length) {
-     //       maxLength = word.length
-     //   }
-    //}
+   // val maxLength: Int = someInputText.useLines { s -> s.maxOf { it.length } }
+    for (word in someInputText.readLines()) {
+        if (maxLength < word.length) {
+            maxLength = word.length
+        }
+    }
     for (txt in someInputText.readLines()) {
         //println("Обрабатываемое слово: $word")
-        if (txt.length == maxLength) {
-            for (symbol in txt) {
-                println("Обрабатываемая буква: $symbol")
-                containsLetter = txt.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol)
-                when {
-                    containsLetter -> break
-                }
+        //if (txt.length == maxLength) {
+            for (symbol in txt.chars()) {
+                //println("Обрабатываемая буква: $symbol")
+               // containsLetter = txt.toUpperCase().substringAfter(symbol.toString().toUpperCase()).contains(symbol.toString())
+               // when {
+                //    containsLetter -> break
+               // }
             }
             //println("Обнаружен текст: $containsLetter; firstAdd: $firstAdd")
-            if (!containsLetter) {
-                when {
-                    firstAdd -> someOutputText.write(txt)
-                    else -> someOutputText.write(", $txt")
-                }
-                firstAdd = false
-            }
-        }
+          //  if (!containsLetter) {
+          //      when {
+          //          firstAdd -> someOutputText.write(txt)
+          //          else -> someOutputText.write(", $txt")
+          //      }
+          //      firstAdd = false
+          //  }
+       // }
     }
 
     someOutputText.close()
