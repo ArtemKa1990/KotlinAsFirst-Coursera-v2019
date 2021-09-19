@@ -118,6 +118,14 @@ fun sibilants(inputName: String, outputName: String) {
             textLine = replaceAllCases(textLine, "ш", "ы", "ш", "и")
             //someOutputText.write(it.replace("шы", "ши", true) + newLine)
         }
+        if (textLine.toUpperCase().contains("ЩЫ")) {
+            textLine = replaceAllCases(textLine, "щ", "ы", "щ", "и")
+            //someOutputText.write(it.replace("шы", "ши", true) + newLine)
+        }
+        if (textLine.toUpperCase().contains("ЧЫ")) {
+            textLine = replaceAllCases(textLine, "ч", "ы", "ч", "и")
+            //someOutputText.write(it.replace("шы", "ши", true) + newLine)
+        }
         if (textLine.toUpperCase().contains("ЧЯ")) {
             textLine = replaceAllCases(textLine, "ч", "я", "ч", "а")
             //someOutputText.write(it.replace("чя", "ча", true) + newLine)
