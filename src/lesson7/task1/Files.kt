@@ -1,4 +1,4 @@
-@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
+
 
 package lesson7.task1
 
@@ -98,7 +98,7 @@ fun replaceAllCases(
         letter1ForReplace.toUpperCase() + letter2ForReplace.toLowerCase(),
         false
     )
-    println("Result text: $resultText")
+
     return resultText
 }
 
