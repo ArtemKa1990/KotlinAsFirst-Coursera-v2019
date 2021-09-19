@@ -6,7 +6,6 @@ import java.io.BufferedWriter
 import java.io.File
 import java.util.Deque
 import java.util.LinkedList
-import kotlin.collections.ArrayDeque
 
 /**
  * Пример
