@@ -309,17 +309,17 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     var containsLetter = false
 
     //maxLength = someInputText.useLines { s -> s.maxOf { it.length } }
-    for (word in someInputText.readLines()) {
-        if (maxLength < word.length) {
-            maxLength = word.length
-        }
-    }
+    //for (word in someInputText.readLines()) {
+    //    if (maxLength < word.length) {
+     //       maxLength = word.length
+     //   }
+    //}
     for (word in someInputText.readLines()) {
         //println("Обрабатываемое слово: $word")
-        if (word.length == maxLength) {
+        //if (word.length == maxLength) {
             for (symbol in word) {
                 //println("Обрабатываемая буква: $symbol")
-                //containsLetter = word.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol)
+                containsLetter = word.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol)
                 when {
                     containsLetter -> break
                 }
@@ -332,7 +332,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
                 }
                 firstAdd = false
             }
-        }
+        //}
     }
 
     someOutputText.close()
