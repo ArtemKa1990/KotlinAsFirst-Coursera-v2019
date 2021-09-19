@@ -72,8 +72,93 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  * Исключения (жюри, брошюра, парашют) в рамках данного задания обрабатывать не нужно
  *
  */
+
+fun replaceAllCases(
+    textLine: String,
+    letter1ForSearch: String,
+    letter2ForSearch: String,
+    letter1ForReplace: String,
+    letter2ForReplace: String
+): String {
+    var resultText = textLine
+    resultText = resultText.replace(
+        letter1ForSearch.toLowerCase() + letter2ForSearch.toLowerCase(),
+        letter1ForReplace.toLowerCase() + letter2ForReplace.toLowerCase(),
+        false
+    )
+    resultText = resultText.replace(
+        letter1ForSearch.toUpperCase() + letter2ForSearch.toUpperCase(),
+        letter1ForReplace.toUpperCase() + letter2ForReplace.toUpperCase(),
+        false
+    )
+    resultText = resultText.replace(
+        letter1ForSearch.toLowerCase() + letter2ForSearch.toUpperCase(),
+        letter1ForReplace.toLowerCase() + letter2ForReplace.toUpperCase(),
+        false
+    )
+    resultText = resultText.replace(
+        letter1ForSearch.toUpperCase() + letter2ForSearch.toLowerCase(),
+        letter1ForReplace.toUpperCase() + letter2ForReplace.toLowerCase(),
+        false
+    )
+    println("Result text: $resultText")
+    return resultText
+}
+
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val someInputText = File(inputName)
+    val someOutputText = File(outputName).bufferedWriter()
+    val newLine = Regex("\n").toString()
+    var textLine = ""
+
+    someInputText.bufferedReader().readLines().forEach {
+        textLine = it
+        if (it.toUpperCase().contains("ЖЫ")) {
+            textLine = replaceAllCases(textLine, "ж", "ы", "ж", "и")
+            //someOutputText.write(it.replace("жы", "жи", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ШЫ")) {
+            textLine = replaceAllCases(textLine, "ш", "ы", "ш", "и")
+            //someOutputText.write(it.replace("шы", "ши", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ЧЯ")) {
+            textLine = replaceAllCases(textLine, "ч", "я", "ч", "а")
+            //someOutputText.write(it.replace("чя", "ча", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ЩЯ")) {
+            textLine = replaceAllCases(textLine, "щ", "я", "щ", "а")
+            //someOutputText.write(it.replace("щя", "ща", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ЖЯ")) {
+            textLine = replaceAllCases(textLine, "ж", "я", "ж", "а")
+            //someOutputText.write(it.replace("жя", "жа", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ШЯ")) {
+            textLine = replaceAllCases(textLine, "ш", "я", "ш", "а")
+            //someOutputText.write(it.replace("шя", "ша", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ЧЮ")) {
+            textLine = replaceAllCases(textLine, "ч", "ю", "ч", "у")
+            //someOutputText.write(it.replace("чю", "чу", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ЩЮ")) {
+            textLine = replaceAllCases(textLine, "щ", "ю", "щ", "у")
+            //someOutputText.write(it.replace("щю", "щу", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ШЮ")) {
+            textLine = replaceAllCases(textLine, "ш", "ю", "ш", "у")
+            //someOutputText.write(it.replace("шю", "шу", true) + newLine)
+        }
+        if (it.toUpperCase().contains("ЖЮ")) {
+            textLine = replaceAllCases(textLine, "ж", "ю", "ж", "у")
+            //someOutputText.write(it.replace("жю", "жу", true) + newLine)
+        }
+
+        someOutputText.write(textLine + newLine)
+
+    }
+
+    someOutputText.close()
 }
 
 /**
@@ -212,7 +297,37 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    //var longestWordsList = mutableListOf<String>()
+    var maxLength = 0
+    var firstAdd = true
+    val someInputText = File(inputName)
+    var someOutputText = File(outputName).bufferedWriter()
+    var containsLetter = false
+
+    maxLength = someInputText.useLines { s -> s.maxOf { it.length } }
+    someInputText.bufferedReader().readLines().forEach { word ->
+        println("Обрабатываемое слово: $word")
+        if (word.length == maxLength) {
+            for (symbol in word) {
+                println("Обрабатываемая буква: $symbol")
+                containsLetter = word.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol)
+                when {
+                    containsLetter -> break
+                }
+            }
+            println("Обнаружен текст: $containsLetter; firstAdd: $firstAdd")
+            if (!containsLetter) {
+                when {
+                    firstAdd -> someOutputText.write(word)
+                    else -> someOutputText.write(", $word")
+                }
+                firstAdd = false
+            }
+        }
+    }
+
+    someOutputText.close()
+    println("Содержимое longestWordsList: $someOutputText")
 }
 
 /**
@@ -261,7 +376,8 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    val someTextFile = File(inputName)
+    TODO()
+   /* val someTextFile = File(inputName)
     val someTextOutput = File(outputName).bufferedWriter()
 
     var resultWord = ""
@@ -342,11 +458,7 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     }
 
     someTextOutput.close()
-}
-
-
-fun main() {
-    markdownToHtmlLists("input/markdown_lists_3.md", "temp_1.txt")
+    */
 }
 
 /**
@@ -449,7 +561,7 @@ fun main() {
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 
-fun addClosingToLine(
+/*fun addClosingToLine(
     closingStackData: Deque<Pair<Int, String>>,
     line: Pair<Int, Pair<String, String>>
 ): Deque<Pair<Int, String>> {
@@ -490,9 +602,10 @@ fun tryToCloseList(
 
     return closingStackData
 }
-
+*/
 fun markdownToHtmlLists(inputName: String, outputName: String) {
-    val someTextFile = File(inputName)
+    TODO()
+    /*val someTextFile = File(inputName)
     val someTextOutput = File(outputName).bufferedWriter()
 
     var currentLevel: Int
@@ -593,6 +706,7 @@ fun markdownToHtmlLists(inputName: String, outputName: String) {
     someTextOutput.write("</html>")
 
     someTextOutput.close()
+     */
 }
 
 /**
