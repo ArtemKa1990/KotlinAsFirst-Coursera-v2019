@@ -304,11 +304,10 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     val someInputText = File(inputName)
     val someOutputText = File(outputName).bufferedWriter()
-    var maxLength = 0
     var firstAdd = true
     var containsLetter = false
 
-    //maxLength = someInputText.useLines { s -> s.maxOf { it.length } }
+    val maxLength: Int = someInputText.useLines { s -> s.maxOf { it.length } }
     //for (word in someInputText.readLines()) {
     //    if (maxLength < word.length) {
      //       maxLength = word.length
@@ -316,23 +315,23 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     //}
     for (txt in someInputText.readLines()) {
         //println("Обрабатываемое слово: $word")
-        //if (word.length == maxLength) {
-            for (symbol in txt.chars()) {
-                //println("Обрабатываемая буква: $symbol")
-                //containsLetter = word.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol)
-             //   when {
-              //      containsLetter -> break
-              //  }
+        if (txt.length == maxLength) {
+            for (symbol in txt) {
+                println("Обрабатываемая буква: $symbol")
+                containsLetter = txt.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol)
+                when {
+                    containsLetter -> break
+                }
             }
             //println("Обнаружен текст: $containsLetter; firstAdd: $firstAdd")
-            /*if (!containsLetter) {
+            if (!containsLetter) {
                 when {
-                    firstAdd -> someOutputText.write(word)
-                    else -> someOutputText.write(", $word")
+                    firstAdd -> someOutputText.write(txt)
+                    else -> someOutputText.write(", $txt")
                 }
                 firstAdd = false
-            }*/
-        //}
+            }
+        }
     }
 
     someOutputText.close()
