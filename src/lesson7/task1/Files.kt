@@ -320,9 +320,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
             for (symbol in txt.chars()) {
                 //println("Обрабатываемая буква: $symbol")
                 containsLetter = txt.toUpperCase().substringAfter(symbol.toString().toUpperCase()).contains(symbol.toString())
-                when {
-                    containsLetter -> break
-                }
+                when {containsLetter == true -> break }
             }
             //println("Обнаружен текст: $containsLetter; firstAdd: $firstAdd")
           //  if (!containsLetter) {
