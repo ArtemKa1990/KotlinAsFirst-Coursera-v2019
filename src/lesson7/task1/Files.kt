@@ -2,8 +2,9 @@
 
 package lesson7.task1
 
+import java.io.BufferedWriter
 import java.io.File
-import kotlin.collections.ArrayDeque
+import java.util.ArrayDeque
 import kotlin.math.log2
 
 /**
@@ -343,6 +344,11 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
     someTextOutput.close()
 }
 
+
+fun main() {
+    markdownToHtmlLists("input/markdown_lists_3.md", "temp_1.txt")
+}
+
 /**
  * Сложная
  *
@@ -442,186 +448,170 @@ fun markdownToHtmlSimple(inputName: String, outputName: String) {
 ///////////////////////////////конец файла//////////////////////////////////////////////////////////////////////////////
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
-fun markdownToHtmlLists(inputName: String, outputName: String) {
-    val someTextFile = File(inputName)
-    val someTextOutput = File(outputName).bufferedWriter()
-    val newLine = Regex("\n").toString()
 
-    var currentLevel: Int
-    var indexOfFirstZeroLevelRecord: Int
-    var indexOfFirstCurLevelRecord: Int
-    var needCloseInTheEnd = false
-    var startListPosition = 0
-    //Данный стек хранит в себе иерархию из файла в виде пары: Уровень вложенности <Int>, Тип списка <String>
-    //    при выходе из самого низкого уровня, его элементы должны очищаться из списка
-    var stackOfTags: ArrayDeque<Pair<Int, String>> = ArrayDeque()
+fun addClosingToLine(
+    closingStackData: ArrayDeque<Pair<Int, String>>,
+    line: Pair<Int, Pair<String, String>>
+): ArrayDeque<Pair<Int, String>> {
+    var closingData = closingStackData
+    if (closingData.isEmpty() || !closingData.contains(
+            Pair(line.first, line.second.first)
+        )
+    ) {
+        closingData.addFirst(Pair(line.first, line.second.first))
+    }
+    return closingData
+}
 
-    // Данный стек хранит в себе иерархию из файла в виде пары: Уровень вложенности <Int>, Текст из файла <String>
-    // Уровень используется для определения позиции закрывающего тега более высокого уровня
-    var resultStack: ArrayDeque<Pair<Int, String>> = ArrayDeque()
-    var text = ""
-    var numList = Regex("\\d*\\.\\s")
-    var starList = Regex("\\*\\s")
+fun tryToCloseList(
+    textData: BufferedWriter,
+    closingStackData: ArrayDeque<Pair<Int, String>>,
+    textInStackData: ArrayDeque<Pair<Int, Pair<String, String>>>
+): ArrayDeque<Pair<Int, String>> {
+    var closingData = closingStackData
+    var closingBuffer: Pair<Int, String>
 
-
-
-    for (line in someTextFile.readLines().reversed()) {
-
-        //Очистить переменную
-        startListPosition = 0
-        needCloseInTheEnd = false
-
-        if (numList.containsMatchIn(line)) {
-            // Вычитать текст и определить его уровень
-            text = line.substringAfter(".").replaceFirst(" ", "")
-            currentLevel = (line.substringBefore(".").count { it == ' ' } / 4)
-
-            // Текущий самый верхний уровень. Если он отличается по типу списка, то нужно добавить открывающий тег
-            // на первом уровне предыдущего списка
-            if (currentLevel == 0 && stackOfTags.isNotEmpty() && stackOfTags.indexOfFirst { it.first == 0 } > 0) {
-                if (stackOfTags[stackOfTags.indexOfFirst { it.first == 0 }].second == "*") {
-                    resultStack.add(resultStack.indexOfFirst { it.first == currentLevel }, Pair(0, "<ul>"))
-                }
+    while (closingData.first().first >= textInStackData.first().first) {
+        closingBuffer = closingData.peekFirst()
+        //println("closingStackТекущий закрывающий тег на уровне: ${closingBuffer.first}; С типом: ${closingBuffer.second} - Следующий тег на уровне: ${textInStackData.first().first}; с типом: ${textInStackData.first().second.first}")
+        if (closingBuffer.first == textInStackData.first().first && closingBuffer.second == textInStackData.first().second.first) {
+            textData.write("</li>")
+            break
+        } else {
+            textData.write("</li>")
+            when (closingBuffer.second) {
+                "." -> textData.write("</ol>")
+                "*" -> textData.write("</ul>")
             }
-
-            //Проверить уровень текста и текущий обрабатываемый уровень
-            if (stackOfTags.isEmpty()) {
-                resultStack.addFirst(Pair(currentLevel, "</ol>"))
-                resultStack.addFirst(Pair(currentLevel, "<li>" + numList.replace(text, "") + "</li>"))
-            } else if (stackOfTags.first().first < currentLevel) {
-                //Произошло смещение уровня на уровень ниже...Добавить закрывающий тег по типу списка для нового уровня
-                resultStack.addFirst(Pair(currentLevel, "</ol>"))
-                resultStack.addFirst(Pair(currentLevel, "<li>" + numList.replace(text, "") + "</li>"))
-            } else if (stackOfTags.first().first > currentLevel) {
-                //Произошло смещение уровня на уровень выше...Добавить открывающий тег по типу списка
-                // для последнего уровня, который обрабатывался
-                if (stackOfTags.first().second == ".") {
-                    resultStack.addFirst(Pair(currentLevel + 1, "<ol>"))
-                } else if (stackOfTags.first().second == "*") {
-                    resultStack.addFirst(Pair(currentLevel + 1, "<ul>"))
-                }
-
-                indexOfFirstZeroLevelRecord = resultStack.indexOfFirst { it.first == 0 }
-                indexOfFirstCurLevelRecord = resultStack.indexOfFirst { it.first == currentLevel }
-                if (indexOfFirstZeroLevelRecord == -1 && indexOfFirstCurLevelRecord == -1) {
-                    startListPosition = resultStack.size
-                } else {
-                    for (closePosition in resultStack.indices) {
-                        if (indexOfFirstZeroLevelRecord == startListPosition || (indexOfFirstCurLevelRecord == startListPosition)) {
-                            break
-                        }
-                        startListPosition = closePosition
-                    }
-                }
-
-                resultStack.add(startListPosition, Pair(currentLevel, "</li>"))
-                resultStack.addFirst(Pair(currentLevel, starList.replace(text, "")))
-                resultStack.addFirst(Pair(currentLevel, "<li>"))
-
-                if ((indexOfFirstZeroLevelRecord == -1 && (currentLevel == 0 || indexOfFirstCurLevelRecord == -1))
-                    || (indexOfFirstCurLevelRecord >= startListPosition
-                            && stackOfTags[stackOfTags.indexOfFirst { it.first == currentLevel }].second != ".")
-                    || (indexOfFirstZeroLevelRecord == startListPosition && indexOfFirstZeroLevelRecord != indexOfFirstCurLevelRecord)
-                ) {
-                    resultStack.add(startListPosition + 3, Pair(currentLevel, "</ol>"))
-                }
-            } else {
-                if (stackOfTags.first().second == "*") {
-                    resultStack.addFirst(Pair(currentLevel + 1, "<ul>"))
-                    resultStack.addFirst(Pair(currentLevel, "</ol>"))
-                }
-
-                resultStack.addFirst(Pair(currentLevel, "<li>" + numList.replace(text, "") + "</li>"))
-            }
-
-            //Записать уровень и тип списка в стек
-            stackOfTags.addFirst(Pair(currentLevel, "."))
-
-        } else if (starList.containsMatchIn(line)) {
-            text = line.substringAfter("*").replaceFirst(" ", "")
-            currentLevel = (line.substringBefore(".").count { it == ' ' } / 4)
-
-            // Текущий самый верхний уровень. Если он отличается по типу списка, то нужно добавить открывающий тег
-            // на первом уровне предыдущего списка
-            if (currentLevel == 0 && stackOfTags.isNotEmpty() && stackOfTags.indexOfFirst { it.first == 0 } > 0) {
-                if (stackOfTags[stackOfTags.indexOfFirst { it.first == 0 }].second == ".") {
-                    resultStack.add(resultStack.indexOfFirst { it.first == currentLevel }, Pair(0, "<ol>"))
-                }
-            }
-
-            //Проверить уровень текста и текущий обрабатываемый уровень
-            if (stackOfTags.isEmpty()) {
-                resultStack.addFirst(Pair(currentLevel, "</ul>"))
-                resultStack.addFirst(Pair(currentLevel, "<li>" + numList.replace(text, "") + "</li>"))
-            } else if (stackOfTags.first().first < currentLevel) {
-                //Произошло смещение уровня на уровень ниже...Добавить закрывающий тег по типу списка для нового уровня
-                resultStack.addFirst(Pair(currentLevel, "</ul>"))
-                resultStack.addFirst(Pair(currentLevel, "<li>" + numList.replace(text, "") + "</li>"))
-            } else if (stackOfTags.first().first > currentLevel) {
-                //Произошло смещение уровня на уровень выше...Добавить открывающий тег по типу списка
-                // для последнего уровня, который обрабатывался
-                if (stackOfTags.first().second == ".") {
-                    resultStack.addFirst(Pair(currentLevel + 1, "<ol>"))
-                } else if (stackOfTags.first().second == "*") {
-                    resultStack.addFirst(Pair(currentLevel + 1, "<ul>"))
-                }
-
-                indexOfFirstZeroLevelRecord = resultStack.indexOfFirst { it.first == 0 }
-                indexOfFirstCurLevelRecord = resultStack.indexOfFirst { it.first == currentLevel }
-                if (indexOfFirstZeroLevelRecord == -1 && indexOfFirstCurLevelRecord == -1) {
-                    startListPosition = resultStack.size
-                } else {
-                    for (closePosition in resultStack.indices) {
-                        if (indexOfFirstZeroLevelRecord == startListPosition || (indexOfFirstCurLevelRecord == startListPosition)) {
-                            break
-                        }
-                        startListPosition = closePosition
-                    }
-                }
-
-                resultStack.add(startListPosition, Pair(currentLevel, "</li>"))
-                resultStack.addFirst(Pair(currentLevel, starList.replace(text, "")))
-                resultStack.addFirst(Pair(currentLevel, "<li>"))
-
-                if ((indexOfFirstZeroLevelRecord == -1 && (currentLevel == 0 || indexOfFirstCurLevelRecord == -1))
-                    || (indexOfFirstCurLevelRecord >= startListPosition
-                            && stackOfTags[stackOfTags.indexOfFirst { it.first == currentLevel }].second != "*")
-                    || (indexOfFirstZeroLevelRecord == startListPosition && indexOfFirstZeroLevelRecord != indexOfFirstCurLevelRecord)
-                ) {
-                    resultStack.add(startListPosition + 3, Pair(currentLevel, "</ul>"))
-                }
-            } else {
-                if (stackOfTags.first().second == ".") {
-                    resultStack.addFirst(Pair(currentLevel, "<ol>"))
-                    resultStack.addFirst(Pair(currentLevel, "</ul>"))
-                }
-                resultStack.addFirst(Pair(currentLevel, "<li>" + numList.replace(text, "") + "</li>"))
-            }
-
-            //Записать уровень и тип списка в стек
-            stackOfTags.addFirst(Pair(currentLevel, "*"))
+            closingData.removeFirst()
+        }
+        when {
+            closingData.isEmpty() -> break
         }
     }
 
-    when (stackOfTags[stackOfTags.indexOfFirst { it.first == 0 }].second) {
-        "." -> resultStack.addFirst(Pair(0, "<ol>"))
-        else -> resultStack.addFirst(Pair(0, "<ul>"))
+    return closingData
+}
+
+fun markdownToHtmlLists(inputName: String, outputName: String) {
+    val someTextFile = File(inputName)
+    val someTextOutput = File(outputName).bufferedWriter()
+
+    var currentLevel: Int
+
+    // Стек значений - Уровень, Тип списка, Текст
+    val levelsAndTypes: ArrayDeque<Pair<Int, Pair<String, String>>> = ArrayDeque()
+    var bufferLine: Pair<Int, Pair<String, String>>
+    // Стек закрывающих тегов
+    var closingStack: ArrayDeque<Pair<Int, String>> = ArrayDeque() // Закрывающий стек - Уровень, Тип списка
+    var closingBuffer: Pair<Int, String>
+
+    var text = ""
+    val numList = Regex("\\d*\\.\\s")
+    val starList = Regex("\\*\\s")
+
+    // Составление карты уровней и типов тегов
+    someTextFile.readLines().reversed().forEach { s ->
+        if (numList.containsMatchIn(s)) {
+            text = s.substringAfter(".").replaceFirst(" ", "")
+            currentLevel = (s.substringBefore(".").count { it == ' ' } / 4)
+
+            levelsAndTypes.addFirst(Pair(currentLevel, Pair(".", text)))
+        } else if (starList.containsMatchIn(s)) {
+            text = s.substringAfter("*").replaceFirst(" ", "")
+            currentLevel = (s.substringBefore("*").count { it == ' ' } / 4)
+
+            levelsAndTypes.addFirst(Pair(currentLevel, Pair("*", text)))
+        }
     }
 
-    if (resultStack.count() > 4) {
-        resultStack.addFirst(Pair(0, "<body>"))
-        resultStack.addLast(Pair(0, "</body>"))
-        resultStack.addFirst(Pair(0, "<html>"))
-        resultStack.addLast(Pair(0, "</html>"))
+    if (levelsAndTypes.isNotEmpty()) {
+        someTextOutput.write("<html>")
+        someTextOutput.write("<body>")
     } else {
-        resultStack.addLast(Pair(0, "</body>"))
-        resultStack.addLast(Pair(0, "</html>"))
+        someTextOutput.write("</html>")
+        someTextOutput.write("</body>")
+        return
     }
 
-    for (text in resultStack) {
-        someTextOutput.write(text.second)
-        someTextOutput.write(newLine)
+    levelsAndTypes.indices.forEach { rowNum ->
+        bufferLine = levelsAndTypes.poll() // Текущая запись
+
+        if (levelsAndTypes.isEmpty()) {
+            someTextOutput.write("<li>" + bufferLine.second.second)
+
+            while (closingStack.isNotEmpty()) {
+                closingBuffer = closingStack.pollFirst()
+                someTextOutput.write("</li>")
+                when (closingBuffer.second) {
+                    "." -> someTextOutput.write("</ol>")
+                    "*" -> someTextOutput.write("</ul>")
+                }
+
+            }
+        } else if (bufferLine.first == levelsAndTypes.first().first && bufferLine.second.first == levelsAndTypes.first().second.first) { // На следующем элементе уровень и тип не изменятся - список не вложенный
+            //println("1Обработка элемента: ${bufferLine.second.second}; Количество записей в стеке закрытия: ${closingStack.size}; Содержание текущей пары: ${closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))}")
+            if (!closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))) {
+                when (bufferLine.second.first) {
+                    "." -> someTextOutput.write("<ol>")
+                    "*" -> someTextOutput.write("<ul>")
+                }
+            }
+            someTextOutput.write("<li>" + bufferLine.second.second + "</li>")
+            addClosingToLine(closingStack, bufferLine)
+
+        } else if (bufferLine.first == levelsAndTypes.first().first && bufferLine.second.first != levelsAndTypes.first().second.first) { // На следующем элементе изменится только тип - список не вложенный
+            if (!closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))) {
+                when (bufferLine.second.first) {
+                    "." -> someTextOutput.write("<ol>")
+                    "*" -> someTextOutput.write("<ul>")
+                }
+            }
+            someTextOutput.write("<li>" + bufferLine.second.second)
+
+            addClosingToLine(closingStack, bufferLine)
+            //println("1Выполнить закрытие для элемента: ${bufferLine.second.second} Уровень первой записи в закрытии: ${closingStack.first().first} - Уровень следующей записи из текста: ${levelsAndTypes.first().first}")
+
+            closingStack = tryToCloseList(someTextOutput, closingStack, levelsAndTypes)
+
+        } else { // Работа с вложенными списками
+            if (bufferLine.first < levelsAndTypes.first().first) { // Следующий элемент - это элемент вложенного списка
+                //println("2Обработка элемента: ${bufferLine.second.second}; Количество записей в стеке закрытия: ${closingStack.size}; Содержание текущей пары: ${closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))}")
+                if (!closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))) {
+                    when (bufferLine.second.first) {
+                        "." -> someTextOutput.write("<ol>")
+                        "*" -> someTextOutput.write("<ul>")
+                    }
+                }
+
+                someTextOutput.write("<li>")
+                someTextOutput.write(bufferLine.second.second)
+
+                addClosingToLine(closingStack, bufferLine)
+            } else if (bufferLine.first > levelsAndTypes.first().first) { //Следующий элемент - это элемент на уровне выше
+                //println("${bufferLine.second.second} - levelsAndTypes.first().first: ${levelsAndTypes.first().first}")
+                if (!closingStack.contains(Pair(bufferLine.first, bufferLine.second.first))) {
+                    when (bufferLine.second.first) {
+                        "." -> someTextOutput.write("<ol>")
+                        "*" -> someTextOutput.write("<ul>")
+                    }
+                }
+
+                addClosingToLine(closingStack, bufferLine)
+
+                someTextOutput.write("<li>" + bufferLine.second.second)
+
+                //println("2Выполнить закрытие для элемента: ${bufferLine.second.second} Уровень первой записи в закрытии: ${closingStack.first().first} - Уровень следующей записи из текста: ${levelsAndTypes.first().first}")
+                closingStack = tryToCloseList(someTextOutput, closingStack, levelsAndTypes)
+
+            }
+
+        }
     }
+
+    someTextOutput.write("</body>")
+    someTextOutput.write("</html>")
+
     someTextOutput.close()
 }
 
