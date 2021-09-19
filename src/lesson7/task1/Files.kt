@@ -105,7 +105,6 @@ fun replaceAllCases(
 fun sibilants(inputName: String, outputName: String) {
     val someInputText = File(inputName)
     val someOutputText = File(outputName).bufferedWriter()
-    val newLine = Regex("\n").toString()
     var textLine: String
 
     for (txt in someInputText.readLines()) {
@@ -159,7 +158,8 @@ fun sibilants(inputName: String, outputName: String) {
             //someOutputText.write(it.replace("жю", "жу", true) + newLine)
         }
 
-        someOutputText.write(textLine + newLine)
+        someOutputText.write(textLine)
+        someOutputText.newLine()
 
     }
 
@@ -319,7 +319,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
         if (word.length == maxLength) {
             for (symbol in word) {
                 //println("Обрабатываемая буква: $symbol")
-                containsLetter = word.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol)
+                //containsLetter = word.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol)
                 when {
                     containsLetter -> break
                 }
