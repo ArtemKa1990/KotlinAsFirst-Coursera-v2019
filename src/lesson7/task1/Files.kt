@@ -1,4 +1,4 @@
-
+@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
 
 package lesson7.task1
 
