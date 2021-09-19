@@ -106,47 +106,47 @@ fun sibilants(inputName: String, outputName: String) {
     val someInputText = File(inputName)
     val someOutputText = File(outputName).bufferedWriter()
     val newLine = Regex("\n").toString()
-    var textLine = ""
+    var textLine: String
 
-    someInputText.bufferedReader().readLines().forEach {
-        textLine = it
-        if (it.toUpperCase().contains("ЖЫ")) {
+    for (txt in someInputText.readLines()) {
+        textLine = txt
+        if (textLine.toUpperCase().contains("ЖЫ")) {
             textLine = replaceAllCases(textLine, "ж", "ы", "ж", "и")
             //someOutputText.write(it.replace("жы", "жи", true) + newLine)
         }
-        if (it.toUpperCase().contains("ШЫ")) {
+        if (textLine.toUpperCase().contains("ШЫ")) {
             textLine = replaceAllCases(textLine, "ш", "ы", "ш", "и")
             //someOutputText.write(it.replace("шы", "ши", true) + newLine)
         }
-        if (it.toUpperCase().contains("ЧЯ")) {
+        if (textLine.toUpperCase().contains("ЧЯ")) {
             textLine = replaceAllCases(textLine, "ч", "я", "ч", "а")
             //someOutputText.write(it.replace("чя", "ча", true) + newLine)
         }
-        if (it.toUpperCase().contains("ЩЯ")) {
+        if (textLine.toUpperCase().contains("ЩЯ")) {
             textLine = replaceAllCases(textLine, "щ", "я", "щ", "а")
             //someOutputText.write(it.replace("щя", "ща", true) + newLine)
         }
-        if (it.toUpperCase().contains("ЖЯ")) {
+        if (textLine.toUpperCase().contains("ЖЯ")) {
             textLine = replaceAllCases(textLine, "ж", "я", "ж", "а")
             //someOutputText.write(it.replace("жя", "жа", true) + newLine)
         }
-        if (it.toUpperCase().contains("ШЯ")) {
+        if (textLine.toUpperCase().contains("ШЯ")) {
             textLine = replaceAllCases(textLine, "ш", "я", "ш", "а")
             //someOutputText.write(it.replace("шя", "ша", true) + newLine)
         }
-        if (it.toUpperCase().contains("ЧЮ")) {
+        if (textLine.toUpperCase().contains("ЧЮ")) {
             textLine = replaceAllCases(textLine, "ч", "ю", "ч", "у")
             //someOutputText.write(it.replace("чю", "чу", true) + newLine)
         }
-        if (it.toUpperCase().contains("ЩЮ")) {
+        if (textLine.toUpperCase().contains("ЩЮ")) {
             textLine = replaceAllCases(textLine, "щ", "ю", "щ", "у")
             //someOutputText.write(it.replace("щю", "щу", true) + newLine)
         }
-        if (it.toUpperCase().contains("ШЮ")) {
+        if (textLine.toUpperCase().contains("ШЮ")) {
             textLine = replaceAllCases(textLine, "ш", "ю", "ш", "у")
             //someOutputText.write(it.replace("шю", "шу", true) + newLine)
         }
-        if (it.toUpperCase().contains("ЖЮ")) {
+        if (textLine.toUpperCase().contains("ЖЮ")) {
             textLine = replaceAllCases(textLine, "ж", "ю", "ж", "у")
             //someOutputText.write(it.replace("жю", "жу", true) + newLine)
         }
@@ -294,8 +294,8 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    //var longestWordsList = mutableListOf<String>()
-    var maxLength = 0
+    TODO()
+   /* var maxLength = 0
     var firstAdd = true
     val someInputText = File(inputName)
     var someOutputText = File(outputName).bufferedWriter()
@@ -324,7 +324,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     }
 
     someOutputText.close()
-    println("Содержимое longestWordsList: $someOutputText")
+    */
 }
 
 /**
