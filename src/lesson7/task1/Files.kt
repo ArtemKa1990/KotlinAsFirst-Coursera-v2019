@@ -307,38 +307,43 @@ fun main(){
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     val someInputText = File(inputName)
     val someOutputText = File(outputName).bufferedWriter()
+    var listWithoutDoubleLetters = mutableListOf<String>()
     var maxLength = 0
     var firstAdd = true
     var containsLetter = false
 
    //val maxLength = someInputText.useLines { s -> s.maxOf { it.length } }
-    for (word in someInputText.readLines()) {
+    for (txt in someInputText.readLines()) {
+        println("Обрабатываемое слово: $txt")
+        for (symbol in txt) {
+            println("Обрабатываемая буква: $symbol")
+            containsLetter = txt.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol.toUpperCase())
+            println("containsLetter: ${txt.toUpperCase().substringAfter(symbol.toUpperCase())}")
+            if (containsLetter == true) {
+                break
+            }
+        }
+        println("Обнаружен текст: $containsLetter; firstAdd: $firstAdd")
+        if (!containsLetter) {
+            listWithoutDoubleLetters.add(txt)
+        }
+    }
+
+    for (word in listWithoutDoubleLetters) {
         if (maxLength < word.length) {
             maxLength = word.length
         }
     }
-    for (txt in someInputText.readLines()) {
-       // println("Обрабатываемое слово: $txt")
-        if (txt.length == maxLength) {
-            for (symbol in txt) {
-                //println("Обрабатываемая буква: $symbol")
-                containsLetter = txt.toUpperCase().substringAfter(symbol.toUpperCase()).contains(symbol.toUpperCase())
-                //println("containsLetter: ${txt.toUpperCase().substringAfter(symbol.toUpperCase())}")
-                if (containsLetter == true) {
-                    break
-                }
+
+    for (txt in listWithoutDoubleLetters) {
+        if (txt.length >= maxLength) {
+            when {
+                firstAdd -> someOutputText.write(txt)
+                else -> someOutputText.write(", $txt")
             }
-           // println("Обнаружен текст: $containsLetter; firstAdd: $firstAdd")
-            if (!containsLetter) {
-                when {
-                    firstAdd -> someOutputText.write(txt)
-                    else -> someOutputText.write(", $txt")
-                }
-                firstAdd = false
-            }
+            firstAdd = false
         }
     }
-
     someOutputText.close()
 }
 
